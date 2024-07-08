@@ -2,9 +2,8 @@ locals {
   team     = "fast"
   env      = "dev"
   provider = "gcp"
-  region   = "au"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.region}"
-  network  = data.tfe_outputs.network.values
+  area     = "au"
+  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
 }
 
 data "tfe_outputs" "network" {
@@ -23,6 +22,6 @@ terraform {
 }
 
 provider "google" {
-  project = "fast-dev-gcp-au"
+  project = "fast-dev-gcp"
   region  = "australia-southeast1"
 }

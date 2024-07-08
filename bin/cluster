@@ -32,20 +32,25 @@ if [[ "${#params[@]}" != 4 ]]; then
   exit 1
 fi
 
-CLUSTER_PATH="infrastructure/environments/${params[0]}-${params[1]}/${params[2]}/${params[3]}"
-if [[ ! -d "${SCRIPT_PATH}/../${CLUSTER_PATH}" ]]; then
-  echo "No cluster found in ${CLUSTER_PATH}."
+REL_ENV_PATH="infrastructure/environments/${params[0]}-${params[1]}/${params[2]}/${params[3]}"
+ABS_ENV_PATH="${SCRIPT_PATH}/../${REL_ENV_PATH}"
+if [[ ! -d "${ABS_ENV_PATH}" ]]; then
+  echo "No cluster found in ${REL_ENV_PATH}."
   exit 1
 fi
 
 echo "[$2]: Spinning $1..."
-cd "${SCRIPT_PATH}/../${CLUSTER_PATH}"
+cd "${ABS_ENV_PATH}"
+if [[ -f "${ABS_ENV_PATH}/.env" ]]; then
+  export $(cat .env | xargs)
+fi
+
 if [[ $1 == "up" ]]; then
-  workspaces=("network" "cluster/(eks|oke|gke)" "cluster/nodes" "cluster/registry" "cluster/namespaces/istio-system" "cluster/namespaces/kube-system" "cluster/namespaces/main")
+  workspaces=("network" "tls" "cluster/(eks|oke|gke)" "cluster/nodes" "cluster/namespaces/kube-system" "cluster/namespaces/istio-system" "cluster/namespaces/hello-world")
   command="apply"
 fi
 if [[ $1 == "down" ]]; then
-  workspaces=("routing" "cluster/registry" "cluster/nodes" "cluster/(eks|oke|gke)" "network")
+  workspaces=("cluster/namespaces/istio-system" "cluster/nodes" "cluster/(eks|oke|gke)" "tls" "network")
   command="destroy"
 fi
 

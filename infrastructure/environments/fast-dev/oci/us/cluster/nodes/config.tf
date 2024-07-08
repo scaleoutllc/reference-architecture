@@ -2,8 +2,8 @@ locals {
   provider             = "oci"
   team                 = "fast"
   env                  = "dev"
-  region               = "us"
-  name                 = "${local.team}-${local.env}-${local.provider}-${local.region}"
+  area                 = "us"
+  name                 = "${local.team}-${local.env}-${local.provider}-${local.area}"
   tags                 = {}
   k8s_version          = "1.28.2"
   node_image_x86_regex = "Oracle-Linux-8.9-\\d{4}.\\d{2}.\\d{2}-\\d{1}-OKE-${local.k8s_version}"

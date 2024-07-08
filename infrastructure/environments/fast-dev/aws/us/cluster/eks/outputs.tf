@@ -1,5 +1,5 @@
 output "kubectl-bootstrap" {
-  value = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${data.aws_region.this_env.name} --profile ${local.region}"
+  value = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${data.aws_region.this_env.name} --profile ${local.area}"
 }
 
 output "name" {
@@ -16,4 +16,8 @@ output "service_cidr" {
 
 output "node_security_group_id" {
   value = module.eks.node_security_group_id
+}
+
+output "oidc_provider_arn" {
+  value = module.eks.oidc_provider_arn
 }

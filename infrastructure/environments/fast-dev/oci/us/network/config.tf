@@ -2,8 +2,8 @@ locals {
   team     = "fast"
   env      = "dev"
   provider = "oci"
-  region   = "us"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.region}"
+  area     = "us"
+  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
   network = {
     // https://www.davidc.net/sites/default/subnets/subnets.html?network=10.50.0.0&mask=20&division=9.550
     cidr    = "10.50.0.0/20"

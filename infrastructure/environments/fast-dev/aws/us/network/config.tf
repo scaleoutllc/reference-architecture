@@ -4,8 +4,8 @@ locals {
   team     = "fast"
   env      = "dev"
   provider = "aws"
-  region   = "us"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.region}"
+  area     = "us"
+  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
   network = {
     // https://www.davidc.net/sites/default/subnets/subnets.html?network=10.10.0.0&mask=20&division=13.3d40
     cidr            = "10.10.0.0/20"

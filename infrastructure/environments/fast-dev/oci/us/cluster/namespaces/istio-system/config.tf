@@ -2,8 +2,8 @@ locals {
   team     = "fast"
   env      = "dev"
   provider = "oci"
-  region   = "us"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.region}"
+  area     = "us"
+  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
   cluster  = data.tfe_outputs.cluster.values
 }
 

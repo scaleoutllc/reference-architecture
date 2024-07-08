@@ -1,6 +1,6 @@
 output "kubectl-bootstrap" {
   value = <<EOF
-gcloud container clusters get-credentials ${local.name} --region australia-southeast1 --project scaleout-fast-dev-au
+gcloud container clusters get-credentials ${local.name} --region australia-southeast1 --project fast-dev-gcp
 EOF
 }
 
@@ -9,7 +9,7 @@ output "name" {
 }
 
 output "endpoint" {
-  value = google_container_cluster.main.endpoint
+  value = "https://${google_container_cluster.main.endpoint}"
 }
 
 output "ca-cert" {

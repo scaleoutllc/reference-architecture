@@ -5,8 +5,8 @@ locals {
   team     = "fast"
   env      = "dev"
   provider = "aws"
-  region   = "au"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.region}"
+  area     = "au"
+  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
   network  = data.tfe_outputs.network.values
   cluster  = data.tfe_outputs.cluster.values
 }

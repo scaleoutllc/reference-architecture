@@ -2,8 +2,8 @@ locals {
   provider    = "oci"
   team        = "fast"
   env         = "dev"
-  region      = "us"
-  name        = "${local.team}-${local.env}-${local.provider}-${local.region}"
+  area        = "us"
+  name        = "${local.team}-${local.env}-${local.provider}-${local.area}"
   tags        = {}
   k8s_version = "1.28.2"
   network     = data.tfe_outputs.network.values
