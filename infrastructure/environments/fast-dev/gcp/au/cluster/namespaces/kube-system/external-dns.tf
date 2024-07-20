@@ -1,9 +1,9 @@
 data "tls_certificate" "gke-oidc" {
-  url = "https://container.googleapis.com/v1/projects/fast-dev-gcp/locations/australia-southeast1/clusters/${data.tfe_outputs.cluster.values.name}"
+  url = data.google_container_cluster.this_env.self_link
 }
 
 resource "aws_iam_openid_connect_provider" "gke-oidc" {
-  url = "https://container.googleapis.com/v1/projects/fast-dev-gcp/locations/australia-southeast1/clusters/${data.tfe_outputs.cluster.values.name}"
+  url = data.google_container_cluster.this_env.self_link
   client_id_list = [
     "sts.amazonaws.com"
   ]
@@ -16,9 +16,9 @@ module "iam-external-dns-for-gke" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "~> v5.9"
   create_role                   = true
-  role_name                     = "external-dns-${data.tfe_outputs.cluster.values.name}"
-  role_description              = "External DNS role for GKE cluster ${data.tfe_outputs.cluster.values.name}"
-  provider_url                  = nonsensitive(aws_iam_openid_connect_provider.gke-oidc.url)
+  role_name                     = "external-dns-${data.google_container_cluster.this_env.name}"
+  role_description              = "External DNS role for GKE cluster ${data.google_container_cluster.this_env.name}"
+  provider_url                  = aws_iam_openid_connect_provider.gke-oidc.url
   role_policy_arns              = [aws_iam_policy.external-dns.arn]
   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:external-dns"]
 }
@@ -46,8 +46,8 @@ data "aws_iam_policy_document" "external-dns" {
 }
 
 resource "aws_iam_policy" "external-dns" {
-  name        = "gke-external-dns-${data.tfe_outputs.cluster.values.name}"
-  description = "External DNS policy for GKE cluster ${data.tfe_outputs.cluster.values.name}"
+  name        = "gke-external-dns-${data.google_container_cluster.this_env.name}"
+  description = "External DNS policy for GKE cluster ${data.google_container_cluster.this_env.name}"
   policy      = data.aws_iam_policy_document.external-dns.json
 }
 

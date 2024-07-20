@@ -21,7 +21,7 @@ if test "$#" -ne 2; then
     usage
 fi
 
-if [[ ("$1" != "up" && "$1" != "down") || -z "$2" ]]; then
+if [[ ("$1" != "validate" && "$1" != "up" && "$1" != "down") || -z "$2" ]]; then
     usage
 fi
 
@@ -45,13 +45,39 @@ if [[ -f "${ABS_ENV_PATH}/.env" ]]; then
   export $(cat .env | xargs)
 fi
 
-if [[ $1 == "up" ]]; then
-  workspaces=("network" "tls" "cluster/(eks|oke|gke)" "cluster/nodes" "cluster/namespaces/kube-system" "cluster/namespaces/istio-system" "cluster/namespaces/hello-world")
-  command="apply"
+if [[ $1 == "validate" || "$1" == "up" ]]; then
+  workspaces=(
+    "network"
+    "tls"
+    "cluster/(eks|oke|gke)"
+    "cluster/nodes"
+    "cluster/namespaces/kube-system"
+    "cluster/namespaces/autoneg-system"
+    "cluster/namespaces/istio-system"
+    "cluster/namespaces/ingress"
+    "cluster/namespaces/hello-world"
+  )
+  if [[ $1 == "validate" ]]; then
+    command="terraform init && terraform validate"
+  fi
+  if [[ $1 == "up" ]]; then
+    command="terraform init && terraform apply -auto-approve"
+  fi
 fi
+
 if [[ $1 == "down" ]]; then
-  workspaces=("cluster/namespaces/istio-system" "cluster/nodes" "cluster/(eks|oke|gke)" "tls" "network")
-  command="destroy"
+  workspaces=(
+    "cluster/namespaces/hello-world"
+    "cluster/namespaces/ingress"
+    "cluster/namespaces/istio-system"
+    "cluster/namespaces/autoneg-system"
+    "cluster/namespaces/kube-system"
+    "cluster/nodes"
+    "cluster/(eks|oke|gke)"
+    "tls"
+    "network"
+  )
+  command="terraform init && terraform destroy -auto-approve"
 fi
 
 for workspace in "${workspaces[@]}"; do
@@ -59,8 +85,7 @@ for workspace in "${workspaces[@]}"; do
   if [[ -d ${selected} ]]; then
     (
       cd $selected
-      terraform init
-      terraform ${command} -auto-approve
+      bash -c "$command"
     ) 2>&1 | sed "s@^@\[$2/${selected}\]: @" &
     tfpid=$!
     # -n ensures the loop stops if there are failures in the subshell

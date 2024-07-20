@@ -3,13 +3,9 @@ locals {
   env      = "dev"
   provider = "gcp"
   area     = "us"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
-  cluster  = data.tfe_outputs.cluster.values
-}
-
-data "tfe_outputs" "cluster" {
-  organization = "scaleout"
-  workspace    = "fast-dev-gcp-us-cluster-gke"
+  region   = "us-east1"
+  project  = "${local.team}-${local.env}-${local.provider}"
+  name     = "${local.project}-${local.area}"
 }
 
 terraform {
@@ -23,6 +19,12 @@ terraform {
 }
 
 provider "google" {
-  project = "fast-dev-gcp"
-  region  = "us-east1"
+  project = local.project
+  region  = local.region
+}
+
+data "google_container_cluster" "this_env" {
+  name     = local.name
+  location = local.region
+  project  = local.project
 }

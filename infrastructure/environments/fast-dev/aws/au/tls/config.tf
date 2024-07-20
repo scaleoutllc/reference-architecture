@@ -3,6 +3,7 @@ locals {
   env      = "dev"
   provider = "aws"
   area     = "au"
+  region   = "ap-southeast-2"
   name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
 }
 
@@ -17,5 +18,5 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-southeast-2"
+  region = local.region
 }

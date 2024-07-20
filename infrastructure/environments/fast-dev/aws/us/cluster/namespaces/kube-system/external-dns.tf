@@ -38,7 +38,7 @@ provider:
   name: aws
 env:
 - name: AWS_DEFAULT_REGION
-  value: ${data.aws_region.this_env.name}
+  value: ${local.region}
 serviceAccount:
   create: false
   name: ${kubernetes_service_account.external-dns.metadata[0].name}

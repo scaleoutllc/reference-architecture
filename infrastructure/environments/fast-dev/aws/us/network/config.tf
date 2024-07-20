@@ -5,6 +5,7 @@ locals {
   env      = "dev"
   provider = "aws"
   area     = "us"
+  region   = "us-east-1"
   name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
   network = {
     // https://www.davidc.net/sites/default/subnets/subnets.html?network=10.10.0.0&mask=20&division=13.3d40
@@ -25,5 +26,5 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = local.region
 }

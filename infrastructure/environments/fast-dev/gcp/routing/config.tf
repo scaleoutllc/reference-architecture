@@ -3,7 +3,9 @@ locals {
   env      = "dev"
   provider = "gcp"
   area     = "routing"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
+  region   = "global"
+  project  = "${local.team}-${local.env}-${local.provider}"
+  name     = "${local.project}-${local.area}"
 }
 
 terraform {
@@ -16,11 +18,13 @@ terraform {
   }
 }
 
+// provider to aws account with route53 zone for this environment
 provider "aws" {
   region = "us-east-1"
 }
 
 provider "google" {
-  project = "fast-dev-gcp"
-  region  = "global"
+  project = local.project
+  region  = local.region
 }
+

@@ -16,6 +16,7 @@ resource "tfe_workspace" "fast-dev-aws-us" {
     "cluster/nodes",
     "cluster/namespaces/kube-system",
     "cluster/namespaces/istio-system",
+    "cluster/namespaces/ingress",
     "cluster/namespaces/hello-world",
   ])
   name                = "${tfe_project.fast-dev-aws-us.name}-${replace(each.value, "/", "-")}"

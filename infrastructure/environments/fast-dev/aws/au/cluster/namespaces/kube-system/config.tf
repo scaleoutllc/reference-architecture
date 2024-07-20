@@ -3,6 +3,7 @@ locals {
   env      = "dev"
   provider = "aws"
   area     = "au"
+  region   = "ap-southeast-2"
   name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
 }
 
@@ -26,8 +27,6 @@ data "tfe_outputs" "cluster" {
   workspace    = "fast-dev-aws-au-cluster-eks"
 }
 
-data "aws_region" "this_env" {}
-
 data "aws_eks_cluster" "this_env" {
   name = local.name
 }
@@ -37,7 +36,7 @@ data "aws_eks_cluster_auth" "this_env" {
 }
 
 provider "aws" {
-  region = "ap-southeast-2"
+  region = local.region
 }
 
 provider "kubernetes" {

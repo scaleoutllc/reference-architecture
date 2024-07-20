@@ -1,5 +1,5 @@
 output "kubectl-bootstrap" {
-  value = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${data.aws_region.this_env.name} --profile au"
+  value = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${local.region} --profile ${local.area}"
 }
 
 output "name" {

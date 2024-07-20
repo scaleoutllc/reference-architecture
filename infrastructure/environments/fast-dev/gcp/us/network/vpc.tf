@@ -61,11 +61,14 @@ resource "google_compute_firewall" "ingress" {
   priority  = 1000
   allow {
     protocol = "tcp"
-    ports    = ["80"]
+    ports = [
+      "80",   // istio-gateway
+      "15021" // istio-gateway health check port
+    ]
   }
   source_ranges = [
     // https://cloud.google.com/load-balancing/docs/firewall-rules
-    // allow google load balancers to health check internally
-    "35.191.0.0/16"
+    "35.191.0.0/16",
+    "130.211.0.0/22"
   ]
 }

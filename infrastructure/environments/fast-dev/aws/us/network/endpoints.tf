@@ -1,6 +1,6 @@
 resource "aws_vpc_endpoint" "s3" {
   vpc_id            = module.vpc.vpc_id
-  service_name      = "com.amazonaws.${data.aws_region.this_env.name}.s3"
+  service_name      = "com.amazonaws.${local.region}.s3"
   vpc_endpoint_type = "Gateway"
   route_table_ids = concat(
     module.vpc.public_route_table_ids,
@@ -11,7 +11,7 @@ resource "aws_vpc_endpoint" "s3" {
 
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id            = module.vpc.vpc_id
-  service_name      = "com.amazonaws.${data.aws_region.this_env.name}.ecr.api"
+  service_name      = "com.amazonaws.${local.region}.ecr.api"
   vpc_endpoint_type = "Interface"
   security_group_ids = [
     aws_security_group.vpc_interface_ingress.id,
@@ -22,7 +22,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
 
 resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id            = module.vpc.vpc_id
-  service_name      = "com.amazonaws.${data.aws_region.this_env.name}.ecr.dkr"
+  service_name      = "com.amazonaws.${local.region}.ecr.dkr"
   vpc_endpoint_type = "Interface"
   security_group_ids = [
     aws_security_group.vpc_interface_ingress.id,

@@ -52,7 +52,7 @@ resource "aws_route53_record" "main" {
 }
 
 resource "google_certificate_manager_certificate_map" "main" {
-  name = "${local.team}-${local.env}"
+  name = local.project
 }
 
 resource "google_certificate_manager_certificate_map_entry" "main" {

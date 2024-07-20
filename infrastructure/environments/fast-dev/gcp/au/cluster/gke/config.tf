@@ -3,12 +3,9 @@ locals {
   env      = "dev"
   provider = "gcp"
   area     = "au"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
-}
-
-data "tfe_outputs" "network" {
-  organization = "scaleout"
-  workspace    = "fast-dev-gcp-au-network"
+  region   = "australia-southeast1"
+  project  = "${local.team}-${local.env}-${local.provider}"
+  name     = "${local.project}-${local.area}"
 }
 
 terraform {
@@ -22,6 +19,15 @@ terraform {
 }
 
 provider "google" {
-  project = "fast-dev-gcp"
-  region  = "australia-southeast1"
+  project = local.project
+  region  = local.region
+}
+
+data "google_compute_network" "this_env" {
+  name = local.name
+}
+
+data "google_compute_subnetwork" "this_env" {
+  name   = local.area
+  region = local.region
 }

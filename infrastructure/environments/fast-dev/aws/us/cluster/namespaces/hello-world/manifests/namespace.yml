@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hello-world
+#  sidecars are not required for simple ingress
+#  labels:
+#    istio-injection: enabled

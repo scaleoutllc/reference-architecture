@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- manifests/namespace.yml
+- manifests/service-north-south-gateway.yml
+# The config below is good for setting up a single cluster on GKE with k8s
+# primitives that handle managing GKE load balancers. Global multi-cluster
+# routing with the same functionality requires buy-in to GKE fleets that
+# use GKE specific resources. This is not desirable for consistency in how
+# routing is managed for multi-cloud scenarios where istio used directly.
+#- manifests/gke-north-south-gateway.yml
+#- manifests/gke-health-check-policy.yml
+#- manifests/gke-httproute-catch-all.yml

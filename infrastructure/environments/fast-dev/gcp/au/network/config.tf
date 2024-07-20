@@ -3,7 +3,9 @@ locals {
   env      = "dev"
   provider = "gcp"
   area     = "au"
-  name     = "${local.team}-${local.env}-${local.provider}-${local.area}"
+  region   = "australia-southeast1"
+  project  = "${local.team}-${local.env}-${local.provider}"
+  name     = "${local.project}-${local.area}"
   // 10.30.0.0/20
   // https://www.davidc.net/sites/default/subnets/subnets.html?network=10.30.0.0&mask=20&division=7.51
   network = {
@@ -27,6 +29,6 @@ terraform {
 }
 
 provider "google" {
-  project = "fast-dev-gcp"
-  region  = "australia-southeast1"
+  project = local.project
+  region  = local.region
 }

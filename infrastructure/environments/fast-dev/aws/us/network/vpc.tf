@@ -3,9 +3,9 @@ module "vpc" {
   version = "~> 5.7"
   name    = local.name
   azs = [
-    "${data.aws_region.this_env.name}a",
-    "${data.aws_region.this_env.name}b",
-    "${data.aws_region.this_env.name}c"
+    "${local.region}a",
+    "${local.region}b",
+    "${local.region}c"
   ]
   cidr            = local.network.cidr
   private_subnets = local.network.private_subnets

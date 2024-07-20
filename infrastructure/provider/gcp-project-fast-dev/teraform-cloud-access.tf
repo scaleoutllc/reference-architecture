@@ -1,13 +1,13 @@
 resource "google_iam_workload_identity_pool" "tfc" {
-  project                   = google_project.fast-dev-gcp.name
-  workload_identity_pool_id = "terraform-cloud"
-  depends_on                = [google_project_service.fast-dev-gcp]
+  project                   = google_project.main.name
+  workload_identity_pool_id = "terraform-cloud-access"
+  depends_on                = [google_project_service.main]
 }
 
 resource "google_iam_workload_identity_pool_provider" "tfc" {
-  project                            = google_project.fast-dev-gcp.name
+  project                            = google_project.main.name
   workload_identity_pool_id          = google_iam_workload_identity_pool.tfc.workload_identity_pool_id
-  workload_identity_pool_provider_id = "terraform-cloud"
+  workload_identity_pool_provider_id = "terraform-cloud-access"
   attribute_mapping = {
     "google.subject"                        = "assertion.sub",
     "attribute.aud"                         = "assertion.aud",
@@ -24,14 +24,14 @@ resource "google_iam_workload_identity_pool_provider" "tfc" {
   oidc {
     issuer_uri = "https://${local.tfc.hostname}"
   }
-  attribute_condition = "assertion.sub.startsWith(\"organization:scaleout:project:${google_project.fast-dev-gcp.name}:workspace:*\")"
+  attribute_condition = "assertion.sub.startsWith(\"organization:scaleout:project:${google_project.main.name}:workspace:*\")"
 }
 
 resource "google_service_account" "tfc" {
-  project      = google_project.fast-dev-gcp.name
+  project      = google_project.main.name
   account_id   = "terraform-cloud"
   display_name = "Terraform Cloud Service Account"
-  depends_on   = [google_project_service.fast-dev-gcp]
+  depends_on   = [google_project_service.main]
 }
 
 resource "google_service_account_iam_member" "tfc" {
@@ -41,7 +41,7 @@ resource "google_service_account_iam_member" "tfc" {
 }
 
 resource "google_project_iam_member" "tfc" {
-  project = google_project.fast-dev-gcp.name
+  project = google_project.main.name
   role    = "roles/owner"
   member  = "serviceAccount:${google_service_account.tfc.email}"
 }

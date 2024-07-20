@@ -1,11 +1,10 @@
-
 resource "google_container_cluster" "main" {
   name                     = local.name
   min_master_version       = "1.29.5-gke.1091002"
   enable_l4_ilb_subsetting = true
   networking_mode          = "VPC_NATIVE"
-  network                  = data.tfe_outputs.network.values.id
-  subnetwork               = data.tfe_outputs.network.values.subnet_id
+  network                  = data.google_compute_network.this_env.id
+  subnetwork               = data.google_compute_subnetwork.this_env.id
   ip_allocation_policy {
     // Refers to secondary_ip_range entries in subnetwork.
     cluster_secondary_range_name  = "pods"
@@ -24,6 +23,9 @@ resource "google_container_cluster" "main" {
   }
   gateway_api_config {
     channel = "CHANNEL_STANDARD"
+  }
+  workload_identity_config {
+    workload_pool = "${local.project}.svc.id.goog"
   }
   remove_default_node_pool = true
   initial_node_count       = 1

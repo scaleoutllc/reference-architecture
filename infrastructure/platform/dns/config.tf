@@ -21,5 +21,5 @@ provider "cloudflare" {
 variable "cloudflare_api_token" {}
 
 provider "aws" {
-  region = "us-east-1"
+  region = local.region
 }

@@ -8,6 +8,7 @@ resource "tfe_workspace" "fast-dev-gcp-au" {
     "network",
     "cluster/gke",
     "cluster/nodes",
+    "cluster/namespaces/autoneg-system",
     "cluster/namespaces/kube-system",
     "cluster/namespaces/istio-system",
     "cluster/namespaces/hello-world",

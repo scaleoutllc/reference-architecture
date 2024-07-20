@@ -34,7 +34,7 @@ resource "helm_release" "load-balancer-controller" {
   values = [
     <<YAML
 clusterName: ${local.name}
-region: ${data.aws_region.this_env.name}
+region: ${local.region}
 vpcId: ${data.tfe_outputs.network.values.vpc_id}
 serviceAccount:
   create: false
