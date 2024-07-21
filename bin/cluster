@@ -13,7 +13,7 @@ function graceful-exit {
 trap 'graceful-exit' SIGINT
 
 function usage {
-  echo "Usage: $0 <up|down> <team-env-provider-region>"
+  echo "Usage: $0 <up|down> <team-env-providers-region>"
   exit 1
 }
 
@@ -32,7 +32,7 @@ if [[ "${#params[@]}" != 4 ]]; then
   exit 1
 fi
 
-REL_ENV_PATH="infrastructure/environments/${params[0]}-${params[1]}/${params[2]}/${params[3]}"
+REL_ENV_PATH="infrastructure/environments/${params[0]}/${params[1]}/${params[2]}/${params[3]}"
 ABS_ENV_PATH="${SCRIPT_PATH}/../${REL_ENV_PATH}"
 if [[ ! -d "${ABS_ENV_PATH}" ]]; then
   echo "No cluster found in ${REL_ENV_PATH}."
@@ -49,13 +49,12 @@ if [[ $1 == "validate" || "$1" == "up" ]]; then
   workspaces=(
     "network"
     "tls"
-    "cluster/(eks|oke|gke)"
-    "cluster/nodes"
-    "cluster/namespaces/kube-system"
-    "cluster/namespaces/autoneg-system"
-    "cluster/namespaces/istio-system"
-    "cluster/namespaces/ingress"
-    "cluster/namespaces/hello-world"
+    "cluster"
+    "nodes"
+    "namespaces/kube-system"
+    "namespaces/autoneg-system"
+    "namespaces/istio-system"
+    "namespaces/ingress"
   )
   if [[ $1 == "validate" ]]; then
     command="terraform init && terraform validate"
@@ -67,25 +66,29 @@ fi
 
 if [[ $1 == "down" ]]; then
   workspaces=(
-    "cluster/namespaces/hello-world"
-    "cluster/namespaces/ingress"
-    "cluster/namespaces/istio-system"
-    "cluster/namespaces/autoneg-system"
-    "cluster/namespaces/kube-system"
-    "cluster/nodes"
-    "cluster/(eks|oke|gke)"
+    "namespaces/ingress"
+    "namespaces/istio-system"
+    "namespaces/autoneg-system"
+    "namespaces/kube-system"
+    "nodes"
+    "cluster"
     "tls"
     "network"
   )
   command="terraform init && terraform destroy -auto-approve"
 fi
 
+source "${SCRIPT_PATH}/../.env"
 for workspace in "${workspaces[@]}"; do
   selected=$(find * -maxdepth 2 -type d | (grep -E "${workspace}"||true) | head -n1)
   if [[ -d ${selected} ]]; then
     (
       cd $selected
       bash -c "$command"
+      if [[ "$workspace" == "cluster" && "$1" == "up" ]]; then
+        kubectl config delete-context $2 2> /dev/null || true
+        bash -c "$(terraform output -raw kubectl-context)"
+      fi
     ) 2>&1 | sed "s@^@\[$2/${selected}\]: @" &
     tfpid=$!
     # -n ensures the loop stops if there are failures in the subshell

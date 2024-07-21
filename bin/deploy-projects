@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Deploy all projects to clusters.
+set -euo pipefail
+SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
+
+cd "${SCRIPT_PATH}/../projects/hello-world"
+for envPath in environments/*; do    
+  env=$(basename $envPath)
+  [[ $env == "base" ]] && continue
+  (
+    cd $envPath
+    kubectl --context $env apply -k .
+  )
+done

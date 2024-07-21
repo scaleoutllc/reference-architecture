@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-
+# Compare two environments for differences.
 set -euo pipefail
 SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
 
 function usage {
-  echo "Usage: $0 <team-env-provider-region> <team-env-provider-region>"
+  echo "Usage: $0 <team-env-providers-region> <team-env-providers-region>"
   exit 1
 }
 
@@ -24,13 +24,13 @@ if [[ "${#envB[@]}" != 4 ]]; then
   exit 1
 fi
 
-A_PATH="${SCRIPT_PATH}/../infrastructure/environments/${envA[0]}-${envA[1]}/${envA[2]}/${envA[3]}"
+A_PATH="${SCRIPT_PATH}/../infrastructure/environments/${envA[0]}/${envA[1]}/${envA[2]}/${envA[3]}"
 if [[ ! -d "${A_PATH}" ]]; then
   echo "No environment found in ${A_PATH}."
   exit 1
 fi
 
-B_PATH="${SCRIPT_PATH}/../infrastructure/environments/${envB[0]}-${envB[1]}/${envB[2]}/${envB[3]}"
+B_PATH="${SCRIPT_PATH}/../infrastructure/environments/${envB[0]}/${envB[1]}/${envB[2]}/${envB[3]}"
 if [[ ! -d "${B_PATH}" ]]; then
   echo "No environment found in ${B_PATH}."
   exit 1

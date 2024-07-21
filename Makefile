@@ -5,13 +5,13 @@ help: ## Displays information about available make tasks
 
 validate-clusters: ## Validate all clusters in parallel.
 	parallel --joblog parallel.log --ungroup --halt soon,done=100% --term-seq INT,600000 \
-	  './bin/cluster validate' ::: fast-dev-aws-us fast-dev-aws-au fast-dev-gcp-us fast-dev-gcp-au
+	  './bin/cluster validate' ::: fast-dev-aws-us fast-dev-aws-au fast-dev-gcp-us fast-dev-gcp-au fast-dev-azure-us
 	cat parallel.log
 	rm parallel.log
 
 build-clusters: ## Build all clusters in parallel.
 	parallel --joblog parallel.log --ungroup --halt soon,done=100% --term-seq INT,600000 \
-	  './bin/cluster up' ::: fast-dev-aws-us fast-dev-aws-au fast-dev-gcp-us fast-dev-gcp-au
+	  './bin/cluster up' ::: fast-dev-aws-us fast-dev-aws-au fast-dev-gcp-us fast-dev-gcp-au fast-dev-azure-us
 	cat parallel.log
 	rm parallel.log
 
