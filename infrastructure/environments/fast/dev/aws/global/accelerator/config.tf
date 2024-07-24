@@ -14,7 +14,7 @@ terraform {
     organization = "scaleout"
     workspaces {
       project = "fast-dev-global-aws"
-      name    = "fast-dev-global-aws"
+      name    = "fast-dev-global-aws-accelerator"
     }
   }
 }

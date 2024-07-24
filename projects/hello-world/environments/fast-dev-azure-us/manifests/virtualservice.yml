@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1 
+kind: VirtualService
+metadata:
+  name: home
+  namespace: hello-world
+spec:
+  hosts:
+  - hello.fast.dev.wescaleout.cloud
+  - hello.us.fast.dev.wescaleout.cloud
+  - hello.azure.fast.dev.wescaleout.cloud
+  - hello.azure-us.fast.dev.wescaleout.cloud
+  - fast-dev-azure-us-north-south-dxa2hactgbdqfua7.z01.azurefd.net
+  gateways:
+  - ingress/north-south
+  http:
+  - route:
+    - destination:
+        host: home.hello-world.svc.cluster.local
+        port:
+          number: 80

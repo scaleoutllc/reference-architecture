@@ -8,13 +8,12 @@ locals {
   name     = "${local.area}-${local.locale}"
   domain   = "fast.dev.wescaleout.cloud"
 }
-
 terraform {
   cloud {
     organization = "scaleout"
     workspaces {
       project = "fast-dev-global"
-      name    = "fast-dev-global-gcp"
+      name    = "fast-dev-global-gcp-load-balancer"
     }
   }
 }
