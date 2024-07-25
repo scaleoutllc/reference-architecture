@@ -6,7 +6,6 @@ locals {
   locale   = "global"
   area     = "${local.team}-${local.env}-${local.provider}"
   name     = "${local.area}-${local.locale}"
-  domain   = "fast.dev.wescaleout.cloud"
 }
 
 terraform {
@@ -14,7 +13,7 @@ terraform {
     organization = "scaleout"
     workspaces {
       project = "fast-dev-aws-global"
-      name    = "fast-dev-aws-global-transit-gateway-associations"
+      name    = "fast-dev-aws-global-cluster-mesh"
     }
   }
 }
@@ -27,14 +26,4 @@ provider "aws" {
 provider "aws" {
   alias  = "au"
   region = "ap-southeast-2"
-}
-
-data "tfe_outputs" "us-network" {
-  organization = "scaleout"
-  workspace    = "fast-dev-aws-us-network"
-}
-
-data "tfe_outputs" "au-network" {
-  organization = "scaleout"
-  workspace    = "fast-dev-aws-au-network"
 }

@@ -9,7 +9,8 @@ resource "tfe_workspace" "providers" {
     "aws-account-root",
     "cloudflare-dns",
     "gcp-project-fast-dev",
-    "gcp-project-platform-dev"
+    "gcp-project-platform-dev",
+    "istio-dev-ca"
   ])
   name                = "${tfe_project.providers.name}-${replace(each.value, "/", "-")}"
   organization        = "scaleout"

@@ -43,3 +43,16 @@ provider "helm" {
     token                  = data.aws_eks_cluster_auth.this.token
   }
 }
+
+module "kustomization" {
+  source = "../../../../../../../../shared/terraform/kustomization"
+  path   = path.module
+  cluster = {
+    host                   = data.aws_eks_cluster.this.endpoint
+    cluster_ca_certificate = data.aws_eks_cluster.this.certificate_authority[0].data
+    user = {
+      token = data.aws_eks_cluster_auth.this.token
+    }
+  }
+}
+

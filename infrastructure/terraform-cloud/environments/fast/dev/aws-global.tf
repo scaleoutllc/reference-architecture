@@ -1,5 +1,6 @@
 resource "tfe_workspace" "fast-dev-global-aws" {
   for_each = toset([
+    "cluster-mesh",
     "load-balancer",
     "transit-gateway-peering"
   ])
