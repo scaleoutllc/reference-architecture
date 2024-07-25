@@ -10,6 +10,7 @@ module "vpc" {
   cidr            = local.network.cidr
   private_subnets = local.network.private_subnets
   public_subnets  = local.network.public_subnets
+  intra_subnets   = local.network.intra_subnets
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
   }

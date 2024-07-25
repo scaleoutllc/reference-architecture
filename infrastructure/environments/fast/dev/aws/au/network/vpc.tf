@@ -10,6 +10,7 @@ module "vpc" {
   cidr            = local.network.cidr
   private_subnets = local.network.private_subnets
   public_subnets  = local.network.public_subnets
+  intra_subnets   = local.network.intra_subnets
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
   }
@@ -34,3 +35,5 @@ module "vpc" {
   create_flow_log_cloudwatch_iam_role  = true
   flow_log_max_aggregation_interval    = 60
 }
+
+

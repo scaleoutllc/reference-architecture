@@ -31,9 +31,9 @@ data "aws_eks_cluster_auth" "this" {
   name = local.name
 }
 
-data "tfe_outputs" "platform-aws" {
+data "tfe_outputs" "fast-dev-aws-global-load-balancer" {
   organization = "scaleout"
-  workspace    = "fast-dev-platform-aws"
+  workspace    = "fast-dev-aws-global-load-balancer"
 }
 
 provider "helm" {

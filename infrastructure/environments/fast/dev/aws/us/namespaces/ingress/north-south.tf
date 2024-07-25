@@ -65,7 +65,7 @@ data "aws_lb" "ingress" {
 }
 
 resource "aws_globalaccelerator_endpoint_group" "aws" {
-  listener_arn          = data.tfe_outputs.platform-aws.values.listener_arn
+  listener_arn          = data.tfe_outputs.fast-dev-aws-global-load-balancer.values.listener_arn
   endpoint_group_region = local.region
   endpoint_configuration {
     endpoint_id = data.aws_lb.ingress.arn

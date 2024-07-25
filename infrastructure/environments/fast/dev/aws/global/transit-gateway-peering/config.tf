@@ -13,12 +13,28 @@ terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-global-aws"
-      name    = "fast-dev-global-aws"
+      project = "fast-dev-aws-global"
+      name    = "fast-dev-aws-global-transit-gateway-associations"
     }
   }
 }
 
 provider "aws" {
   region = "us-east-1"
+}
+
+provider "aws" {
+  alias  = "au"
+  region = "ap-southeast-2"
+}
+
+data "tfe_outputs" "us" {
+  organization = "scaleout"
+  workspace    = "fast-dev-aws-us-network"
+}
+
+
+data "tfe_outputs" "au" {
+  organization = "scaleout"
+  workspace    = "fast-dev-aws-au-network"
 }

@@ -11,6 +11,7 @@ locals {
     cidr            = "10.20.0.0/20"
     private_subnets = ["10.20.0.0/22", "10.20.4.0/22", "10.20.8.0/22"],
     public_subnets  = ["10.20.12.0/24", "10.20.13.0/24", "10.20.14.0/24"]
+    intra_subnets   = ["10.20.15.0/26", "10.20.15.64/26", "10.20.15.128/26"]
   }
 }
 
@@ -27,3 +28,5 @@ terraform {
 provider "aws" {
   region = local.region
 }
+
+data "aws_caller_identity" "this" {}
