@@ -34,9 +34,8 @@ resource "google_container_cluster" "main" {
 }
 
 resource "google_compute_firewall" "north-south" {
-  name      = "${local.name}-north-south"
-  network   = data.google_compute_network.this.id
-  direction = "INGRESS"
+  name    = "${local.name}-north-south"
+  network = data.google_compute_network.this.id
   source_ranges = [
     // https://cloud.google.com/load-balancing/docs/firewall-rules
     "35.191.0.0/16",

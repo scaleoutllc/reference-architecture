@@ -1,3 +1,15 @@
+module "kustomization" {
+  source = "../../../../../../../../shared/terraform/kustomization"
+  path   = path.module
+  cluster = {
+    host                   = data.aws_eks_cluster.this.endpoint
+    cluster_ca_certificate = data.aws_eks_cluster.this.certificate_authority[0].data
+    user = {
+      token = data.aws_eks_cluster_auth.this.token
+    }
+  }
+}
+
 resource "helm_release" "north-south-gateway" {
   name             = "north-south-gateway"
   repository       = "https://istio-release.storage.googleapis.com/charts"
@@ -53,7 +65,7 @@ data "aws_lb" "north-south" {
 }
 
 resource "aws_globalaccelerator_endpoint_group" "aws" {
-  listener_arn          = data.tfe_outputs.fast-dev-aws-global-load-balancer.values.listener_arn
+  listener_arn          = data.tfe_outputs.fast-dev-global-aws-load-balancer.values.listener_arn
   endpoint_group_region = local.region
   endpoint_configuration {
     endpoint_id = data.aws_lb.north-south.arn

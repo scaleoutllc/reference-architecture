@@ -3,20 +3,20 @@
 help: ## Displays information about available make tasks
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-validate-clusters: ## Validate all clusters in parallel.
-	parallel --joblog parallel.log --ungroup --halt soon,done=100% --term-seq INT,600000 \
-	  './bin/cluster validate' ::: fast-dev-aws-us fast-dev-aws-au fast-dev-gcp-us fast-dev-gcp-au fast-dev-azure-us
-	cat parallel.log
-	rm parallel.log
+validate-network: ## Validate fast-dev network.
+	bin/infra validate fast-dev network
 
-build-clusters: ## Build all clusters in parallel.
-	parallel --joblog parallel.log --ungroup --halt soon,done=100% --term-seq INT,600000 \
-	  './bin/cluster up' ::: fast-dev-aws-us fast-dev-aws-au fast-dev-gcp-us fast-dev-gcp-au fast-dev-azure-us
-	cat parallel.log
-	rm parallel.log
+build-network: ## Build fast-dev network.
+	bin/infra apply fast-dev network
 
-destroy-clusters: ## Tear down all clusters in parallel.
-	parallel --joblog parallel.log --ungroup --halt soon,done=100% --term-seq INT,600000 \
-	  './bin/cluster down' ::: fast-dev-aws-us fast-dev-aws-au fast-dev-gcp-us fast-dev-gcp-au
-	cat parallel.log
-	rm parallel.log
+destroy-network: ## Destroy fast-dev network.
+	bin/infra destroy fast-dev network
+
+validate-envs: ## Validate fast-dev environments.
+	parallel --ungroup "bin/infra validate fast-dev" ::: aws-us aws-au gcp-us gcp-au
+
+build-envs: ## Build fast-dev environments.
+	parallel --ungroup "bin/infra apply fast-dev" ::: aws-us aws-au gcp-us gcp-au
+
+destroy-envs: ## Tear down fast-dev environments
+	parallel --ungroup "bin/infra destroy fast-dev" ::: aws-us aws-au gcp-us gcp-au

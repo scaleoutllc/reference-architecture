@@ -13,8 +13,8 @@ terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-aws-global"
-      name    = "fast-dev-aws-global-transit-gateway-associations"
+      project = "fast-dev-global-aws"
+      name    = "fast-dev-global-aws-transit-gateway-peering"
     }
   }
 }

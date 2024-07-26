@@ -8,6 +8,8 @@ for envPath in environments/*; do
   env=$(basename $envPath)
   [[ $env == "base" ]] && continue
   (
+    kubectl config delete-context $env 2> /dev/null || true
+    bash -c "$(terraform -chdir="${SCRIPT_PATH}/../infrastructure/environments/${env//-//}/cluster" output -raw kubectl-context)"
     cd $envPath
     kubectl --context $env apply -k .
   )

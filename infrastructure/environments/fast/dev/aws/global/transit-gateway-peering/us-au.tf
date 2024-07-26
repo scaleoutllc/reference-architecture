@@ -22,6 +22,9 @@ resource "aws_ec2_transit_gateway_route" "us-peering-static-route-to-au" {
   destination_cidr_block         = data.tfe_outputs.au-network.values.config.cidr
   transit_gateway_attachment_id  = aws_ec2_transit_gateway_peering_attachment.us-au.id
   transit_gateway_route_table_id = data.tfe_outputs.us-network.values.transit_gateway_route_table_id
+  depends_on = [
+    aws_ec2_transit_gateway_peering_attachment_accepter.us-au
+  ]
 }
 
 // put static route from us network to peering connection on au side
@@ -30,6 +33,9 @@ resource "aws_ec2_transit_gateway_route" "au-peering-static-route-to-us" {
   destination_cidr_block         = data.tfe_outputs.us-network.values.config.cidr
   transit_gateway_attachment_id  = aws_ec2_transit_gateway_peering_attachment.us-au.id
   transit_gateway_route_table_id = data.tfe_outputs.au-network.values.transit_gateway_route_table_id
+  depends_on = [
+    aws_ec2_transit_gateway_peering_attachment_accepter.us-au
+  ]
 }
 
 // put static route from us network to au network via transit gateway on every us subnet
