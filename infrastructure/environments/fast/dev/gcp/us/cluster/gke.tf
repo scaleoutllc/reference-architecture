@@ -11,8 +11,9 @@ resource "google_container_cluster" "main" {
     services_secondary_range_name = "services"
   }
   private_cluster_config {
-    enable_private_nodes   = true
-    master_ipv4_cidr_block = "192.168.3.0/28"
+    enable_private_nodes = true
+    // third octet matches second of network to prevent collisions with peered vpcs
+    master_ipv4_cidr_block = "192.168.40.0/28"
   }
   # List of networks that can contact the control plane.
   master_authorized_networks_config {
@@ -30,4 +31,22 @@ resource "google_container_cluster" "main" {
   remove_default_node_pool = true
   initial_node_count       = 1
   deletion_protection      = false
+}
+
+resource "google_compute_firewall" "north-south" {
+  name    = "${local.name}-north-south"
+  network = data.google_compute_network.this.id
+  source_ranges = [
+    // https://cloud.google.com/load-balancing/docs/firewall-rules
+    "35.191.0.0/16",
+    "130.211.0.0/22"
+  ]
+  target_tags = ["${local.name}-routing"]
+  allow {
+    protocol = "tcp"
+    ports = [
+      "80",   // istio-gateway
+      "15021" // istio-gateway health check port
+    ]
+  }
 }

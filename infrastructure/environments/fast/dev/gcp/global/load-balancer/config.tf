@@ -7,6 +7,15 @@ locals {
   area     = "${local.team}-${local.env}-${local.provider}"
   name     = "${local.area}-${local.locale}"
   domain   = "fast.dev.wescaleout.cloud"
+  sans = [
+    local.domain,                             // global
+    "*.${local.domain}",                      // global
+    "*.us.${local.domain}",                   // regional
+    "*.au.${local.domain}",                   // regional
+    "*.${local.provider}.${local.domain}",    // provider
+    "*.${local.provider}-us.${local.domain}", // fully-specified
+    "*.${local.provider}-au.${local.domain}"  // fully-specified
+  ]
 }
 
 terraform {

@@ -15,5 +15,6 @@ resource "google_container_node_pool" "system" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
+    tags = ["${local.name}-system"]
   }
 }

@@ -1,6 +1,8 @@
 resource "tfe_workspace" "fast-dev-global-gcp" {
   for_each = toset([
-    "load-balancer"
+    "cluster-mesh",
+    "load-balancer",
+    "network-connectivity-hub"
   ])
   name                = "${tfe_project.fast-dev-global.name}-gcp-${each.key}"
   organization        = "scaleout"

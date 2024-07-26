@@ -23,6 +23,7 @@ resource "google_container_node_pool" "routing" {
       value  = "true"
       effect = "NO_SCHEDULE"
     }
+    tags = ["${local.name}-routing"]
   }
 }
 

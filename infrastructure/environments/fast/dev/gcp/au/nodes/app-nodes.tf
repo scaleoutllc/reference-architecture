@@ -23,5 +23,6 @@ resource "google_container_node_pool" "app" {
       value  = "true"
       effect = "NO_SCHEDULE"
     }
+    tags = ["${local.name}-app"]
   }
 }

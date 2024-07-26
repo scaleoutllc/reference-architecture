@@ -32,3 +32,8 @@ provider "google" {
   project = local.area
   region  = local.region
 }
+
+data "tfe_outputs" "hub" {
+  organization = "scaleout"
+  workspace    = "fast-dev-global-gcp-network-connectivity-hub"
+}

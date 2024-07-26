@@ -1,16 +1,3 @@
-locals {
-  domain = "fast.dev.wescaleout.cloud"
-  sans = [
-    local.domain,                             // global
-    "*.${local.domain}",                      // global
-    "*.us.${local.domain}",                   // regional
-    "*.au.${local.domain}",                   // regional
-    "*.${local.provider}.${local.domain}",    // provider
-    "*.${local.provider}-us.${local.domain}", // fully-specified
-    "*.${local.provider}-au.${local.domain}"  // fully-specified
-  ]
-}
-
 resource "google_certificate_manager_dns_authorization" "main" {
   // google automatically covers the wildcard of the domain supplied.
   for_each = toset([
