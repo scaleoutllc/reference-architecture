@@ -59,13 +59,15 @@ environments:
               workspaces:
               # This peers all AWS transit gateways together once they exist.
               - fast/dev/aws/global/transit-gateway-peering
-              # This creates VPN links between the VPCs of each cloud region
-              # pair (e.g. aws-au->gcp-au / aws-us->gcp-us) with BGP peered
-              # routing.
-              # TODO:
-              #   establish routes from disparate provider/region pairs, it
-              #   is still not possible for aws-au to reach gcp-us etc.
-              - fast/dev/multi-cloud
+              deps:
+                workspaces:
+                # This creates VPN links between the VPCs of each cloud region
+                # pair (e.g. aws-au->gcp-au / aws-us->gcp-us) with BGP peered
+                # routing.
+                # TODO:
+                #   establish routes from disparate provider/region pairs, it
+                #   is still not possible for aws-au to reach gcp-us etc.
+                - fast/dev/multi-cloud
 
       # Each of the groups below represents a regional cluster in one of the
       # supported cloud providers.
