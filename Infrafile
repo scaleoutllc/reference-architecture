@@ -12,41 +12,60 @@ environments:
     groups:
       # The network group manages all networks in all clouds and links them
       # together so they can communicate as one. It must be created before any
-      # of the clusters. Network connectivity between clouds can be validated
-      # using the debug vms deployed in each network.
+      # of the clusters. Network connectivity between VPCs and clouds can be
+      # validated using `bin/test-network`.
       network:
+        # This workspace stands up all of the Terraform Cloud workspaces that
+        # the network and clusters will be deployed into.
         workspaces:
-        # This hub allows separate/regional VPCs in GCP to be networked together.
-        # It must exist before the GCP networks are created. Each VPC will join
-        # this hub as a spoke at creation time.
-        - fast/dev/gcp/global/network-connectivity-hub
-        # This load balancer is a global entrypoint to all regional GCP clusters.
-        # It must exist before GKE clusters are created. An istio-gateway service
-        # running in each regional GKE cluster will associate its pods with this
-        # global load balancer directly.
-        - fast/dev/gcp/global/load-balancer
-        # This L4 load balancer (AWS Accelerator) is a global entrypoint to all
-        # regional AWS clusters. It must exist before EKS clusters are created.
-        # Each regional EKS cluster has a load balancer that will be associated
-        # with the "accelerator".
-        - fast/dev/aws/global/load-balancer
+        - ../terraform-cloud/environments/fast/dev
         deps:
           workspaces:
-          # These are AWS networks. Each contains a transit gateway that can be
-          # peered with others to allow cross region / account VPC networking.
-          # Pods in one cluster will have direct connectivity to pods in the
-          # other.
-          - fast/dev/aws/au/network
-          - fast/dev/aws/us/network
-          # These are GCP networks. Each will join the GCP network connectivity
-          # hub as a spoke. Pods in one cluster will have direct connectivity
-          # to pods in the other.
-          - fast/dev/gcp/au/network
-          - fast/dev/gcp/us/network
+          # This hub enables direct routing between separate/regional VPCs in
+          # GCP. It must exist before regional networks are created. Each VPC
+          # will join this hub as a spoke at creation time. Using a single
+          # global VPC in GCP is also possible and less complex. The decision
+          # to use GCP's network connectivity hub is based on long experience
+          # with large organizations where silos between teams often prevent a
+          # truly unified approach to network. Additionally on-prem networks
+          # can be joined to the hub in the same manner.
+          - fast/dev/gcp/global/network-connectivity-hub
+          # This load balancer is a global entry point to all regional GCP
+          # clusters. It must exist before GKE clusters are created. An
+          # istio-gateway service running in each regional GKE cluster will
+          # associate its pods with this global load balancer directly.
+          - fast/dev/gcp/global/load-balancer
+          # This L4 load balancer (AWS Accelerator) is a global entrypoint to
+          # all regional AWS clusters. It must exist before EKS clusters are
+          # created. Each regional EKS cluster has a load balancer that will
+          # be associated with the "accelerator".
+          - fast/dev/aws/global/load-balancer
           deps:
             workspaces:
-            # This peers all AWS transit gateways together once they exist.
-            - fast/dev/aws/global/transit-gateway-peering
+            # These are AWS networks. Each contains a transit gateway that can
+            # be peered with others to allow cross region / account VPC
+            # networking. Pods in one cluster will have direct connectivity to
+            # pods in the other. This makes east-west routing as simple as it
+            # possibly can me.
+            - fast/dev/aws/au/network
+            - fast/dev/aws/us/network
+            # These are GCP networks. Each will join the network connectivity
+            # hub as a spoke at creation time. Pods in one cluster will have
+            # direct connectivity to pods in the other. This makes east-west
+            # routing as simple as it possibly can me.
+            - fast/dev/gcp/au/network
+            - fast/dev/gcp/us/network
+            deps:
+              workspaces:
+              # This peers all AWS transit gateways together once they exist.
+              - fast/dev/aws/global/transit-gateway-peering
+              # This creates VPN links between the VPCs of each cloud region
+              # pair (e.g. aws-au->gcp-au / aws-us->gcp-us) with BGP peered
+              # routing.
+              # TODO:
+              #   establish routes from disparate provider/region pairs, it
+              #   is still not possible for aws-au to reach gcp-us etc.
+              - fast/dev/multi-cloud
 
       # Each of the groups below represents a regional cluster in one of the
       # supported cloud providers.

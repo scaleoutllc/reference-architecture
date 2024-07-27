@@ -25,13 +25,18 @@ resource "google_compute_instance" "debug" {
     }
   }
   metadata = {
-    ssh-keys = <<EOF
-      tkellen:${file(pathexpand("~/.ssh/id_rsa.pub"))} tkellen
+    ssh-keys       = <<EOF
+      root:${file(pathexpand("~/.ssh/id_rsa.pub"))} root
     EOF
+    startup-script = "#!/bin/bash\nsudo apt-get update && sudo apt-get install netcat-openbsd -y"
   }
   tags = ["debug-vm"]
 }
 
-output "debug_vm_public_ip" {
-  value = google_compute_instance.debug.network_interface.0.access_config.0.nat_ip
+output "debug-vm" {
+  value = "root@${google_compute_instance.debug.network_interface.0.access_config.0.nat_ip}"
+}
+
+output "debug-vm-private-ip" {
+  value = google_compute_instance.debug.network_interface.0.network_ip
 }

@@ -1,0 +1,54 @@
+#!/bin/bash
+# Convenience script for testing VPC network connectivity within and between
+# cloud providers.
+set -euo pipefail
+SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
+
+INFRA_PATH="${SCRIPT_PATH}/../infrastructure/environments/fast/dev"
+
+envs=(aws-us aws-au gcp-us gcp-au)
+
+function endlessRemote {
+  ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+    $1 "bash -c 'while true; do results=\$($2); echo \"\$results\"; done'"
+}
+
+
+echo "Gathering network configuration..."
+vms=()
+ips=()
+# Iterate over all environments.
+for env in "${envs[@]}"; do
+  # Find the path to the network for the environment of this iteration.
+  cd "${INFRA_PATH}/${env//-//}/network"
+  # Fetch the user@host for the debug vm in the environment of this iteration.
+  vm=$(terraform output -raw debug-vm)
+  # Fetch the private ip for the debug vm in the environment of this iteration.
+  ip=$(terraform output -raw debug-vm-private-ip)
+  # Populate the array of debug vms and their private ips.
+  vms+=($vm)
+  ips+=($ip)
+  # Show what was found.
+  echo "$env: $vm ($ip)"
+done
+echo "Done."
+
+echo "Repeatedly testing connectivity until manually exited..."
+# Iterate over all environments.
+for envIdx in "${!envs[@]}"; do
+  # Initialize a variable to hold all network connectivity test commands.
+  tests=""
+  # Iterate over all private ips for all environments.
+  for ipIdx in "${!ips[@]}"; do
+    # Skip testing connection to self.
+    if [[ "$envIdx" != "$ipIdx" ]]; then
+      # Print the source and destination environments.
+      tests+="printf \"\033[0;34m${envs[$envIdx]}->${envs[$ipIdx]}:\033[0m \";"
+      # Test SSH comms between source and destination debug vms using netcat.
+      tests+="nc -zv -w1 ${ips[$ipIdx]} 22 2>&1 | GREP_COLORS=\"mt=01;32\" grep --color=always -E \"succeeded|$\" | GREP_COLORS=\"mt=01;31\" grep --color=always -E \"timed out|$\";"
+    fi
+  done
+  endlessRemote "${vms[$envIdx]}" "${tests}" &
+done
+wait
+

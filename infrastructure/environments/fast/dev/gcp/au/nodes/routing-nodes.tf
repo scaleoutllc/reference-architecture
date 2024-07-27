@@ -6,7 +6,7 @@ resource "google_container_node_pool" "routing" {
   node_config {
     disk_size_gb    = 20
     preemptible     = true
-    machine_type    = "e2-small"
+    machine_type    = "e2-medium"
     service_account = google_service_account.nodes.email
     image_type      = "COS_CONTAINERD"
     workload_metadata_config {

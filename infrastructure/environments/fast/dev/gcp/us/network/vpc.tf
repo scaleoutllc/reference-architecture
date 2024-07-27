@@ -12,15 +12,15 @@ resource "google_compute_subnetwork" "main" {
   purpose                  = "PRIVATE"
   secondary_ip_range {
     range_name    = "pods"
-    ip_cidr_range = local.network.ranges.pods
+    ip_cidr_range = local.network.subnets.pods
   }
   secondary_ip_range {
     range_name    = "services"
-    ip_cidr_range = local.network.ranges.services
+    ip_cidr_range = local.network.subnets.services
   }
   secondary_ip_range {
     range_name    = "private"
-    ip_cidr_range = local.network.ranges.private
+    ip_cidr_range = local.network.subnets.private
   }
 }
 
@@ -33,6 +33,13 @@ resource "google_compute_address" "public" {
 resource "google_compute_router" "main" {
   name    = local.name
   network = google_compute_network.main.self_link
+  bgp {
+    asn            = local.network.asn
+    advertise_mode = "CUSTOM"
+    advertised_groups = [
+      "ALL_SUBNETS"
+    ]
+  }
 }
 
 // Allow outbound internet access on all subnetworks except "private".

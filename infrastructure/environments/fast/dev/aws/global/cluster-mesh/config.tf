@@ -12,7 +12,7 @@ terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-global-aws"
+      project = "fast-dev-global"
       name    = "fast-dev-global-aws-cluster-mesh"
     }
   }
