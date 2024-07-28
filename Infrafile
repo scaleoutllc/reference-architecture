@@ -10,11 +10,11 @@ environments:
     # Each key under groups defines a collection of workspaces responsible for
     # managing a logical portion of the infrastructure.
     groups:
-      # The network group manages all networks in all clouds and links them
+      # The platform group manages all networks in all clouds and links them
       # together so they can communicate as one. It must be created before any
       # of the clusters. Network connectivity between VPCs and clouds can be
       # validated using `bin/test-network`.
-      network:
+      platform:
         # This workspace stands up all of the Terraform Cloud workspaces that
         # the network and clusters will be deployed into.
         workspaces:
