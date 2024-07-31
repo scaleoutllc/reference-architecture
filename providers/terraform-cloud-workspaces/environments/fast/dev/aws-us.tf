@@ -9,15 +9,12 @@ resource "tfe_project_variable_set" "fast-dev-aws-us" {
 }
 
 resource "tfe_workspace" "fast-dev-aws-us" {
-  for_each = toset([
-    "network",
-    "tls",
-    "cluster",
-    "nodes",
-    "namespaces/kube-system",
-    "namespaces/istio-system",
-    "namespaces/ingress",
-  ])
+  for_each = distinct(flatten([
+    for _, v in flatten(
+    fileset(path.module, "../../../../../environments/fast/dev")) :
+    regex("../../../../../environments/fast/dev", dirname(v)
+    )
+  ]))
   name                = "${tfe_project.fast-dev-aws-us.name}-${replace(each.value, "/", "-")}"
   organization        = "scaleout"
   project_id          = tfe_project.fast-dev-aws-us.id

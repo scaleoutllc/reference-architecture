@@ -19,10 +19,10 @@ module "aws-au-gcp-au-vpn" {
 resource "aws_route" "aws-au-to-gcp-au" {
   provider = aws.au
   for_each = toset(concat(
-    nonsensitive(data.tfe_outputs.aws-au-network.values.private_route_table_ids),
-    nonsensitive(data.tfe_outputs.aws-au-network.values.public_route_table_ids),
+    data.tfe_outputs.aws-au-network.values.private_route_table_ids,
+    data.tfe_outputs.aws-au-network.values.public_route_table_ids,
   ))
   route_table_id         = each.value
-  destination_cidr_block = nonsensitive(data.tfe_outputs.gcp-au-network.values.config.cidr)
+  destination_cidr_block = data.tfe_outputs.gcp-au-network.values.config.cidr
   transit_gateway_id     = data.tfe_outputs.aws-au-network.values.transit_gateway_id
 }

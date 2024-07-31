@@ -3,9 +3,9 @@ locals {
   env      = "dev"
   provider = "aws"
   region   = "ap-southeast-2"
-  locale   = "au"
   area     = "${local.team}-${local.env}-${local.provider}"
-  name     = "${local.area}-${local.locale}"
+  name     = "${local.area}-${local.region}"
+  network  = yamldecode(file("../../../networks.yml")).networks[local.env]["${local.provider}-${local.region}-${local.team}"]
 }
 
 terraform {
@@ -13,7 +13,7 @@ terraform {
     organization = "scaleout"
     workspaces {
       project = "platform-dev-aws"
-      name    = "platform-dev-aws-au-fast-vpc"
+      name    = "platform-dev-aws-ap-southeast-2-fast-vpc"
     }
   }
 }

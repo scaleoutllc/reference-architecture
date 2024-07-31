@@ -1,40 +1,48 @@
 locals {
-  team     = "fast"
+  team     = "plaform"
   env      = "dev"
   provider = "aws"
   region   = "global"
-  locale   = "global"
   area     = "${local.team}-${local.env}-${local.provider}"
-  name     = "${local.area}-${local.locale}"
-  domain   = "fast.dev.wescaleout.cloud"
+  name     = "${local.area}-${local.region}"
 }
 
 terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-global"
-      name    = "fast-dev-global-aws-transit-gateway-peering"
+      project = "platform-dev-aws-global"
+      name    = "platform-dev-aws-global-transit-gateway"
     }
   }
 }
 
 provider "aws" {
-  alias  = "us"
+  alias  = "us-east-1"
   region = "us-east-1"
 }
 
 provider "aws" {
-  alias  = "au"
+  alias  = "ap-southeast-2"
   region = "ap-southeast-2"
 }
 
-data "tfe_outputs" "us-network" {
+data "tfe_outputs" "us-east-1-transit-vpc" {
   organization = "scaleout"
-  workspace    = "fast-dev-aws-us-network"
+  workspace    = "platform-dev-aws-us-east-1-transit-vpc"
 }
 
-data "tfe_outputs" "au-network" {
+data "tfe_outputs" "ap-southeast-2-transit-vpc" {
   organization = "scaleout"
-  workspace    = "fast-dev-aws-au-network"
+  workspace    = "platform-dev-aws-ap-southeast-2-transit-vpc"
+}
+
+data "tfe_outputs" "us-east-1-fast-vpc" {
+  organization = "scaleout"
+  workspace    = "platform-dev-aws-us-east-1-fast-vpc"
+}
+
+data "tfe_outputs" "ap-southeast-2-fast-vpc" {
+  organization = "scaleout"
+  workspace    = "platform-dev-aws-ap-southeast-2-fast-vpc"
 }

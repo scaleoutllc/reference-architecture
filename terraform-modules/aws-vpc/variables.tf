@@ -12,11 +12,13 @@ variable "azs" {
 }
 
 variable "public_subnets" {
-  type = list(string)
+  type    = list(string)
+  default = []
 }
 
 variable "private_subnets" {
-  type = list(string)
+  type    = list(string)
+  default = []
 }
 
 variable "transit_gateway_subnets" {
@@ -28,9 +30,5 @@ variable "internet_gateway" {
 }
 
 variable "nat_gateways" {
-  type = bool
-}
-
-variable "transit_gateway" {
   type = bool
 }

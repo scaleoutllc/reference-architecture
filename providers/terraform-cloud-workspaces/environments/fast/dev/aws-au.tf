@@ -10,8 +10,6 @@ resource "tfe_project_variable_set" "fast-dev-aws-au" {
 
 resource "tfe_workspace" "fast-dev-aws-au" {
   for_each = toset([
-    "network",
-    "tls",
     "cluster",
     "nodes",
     "namespaces/kube-system",

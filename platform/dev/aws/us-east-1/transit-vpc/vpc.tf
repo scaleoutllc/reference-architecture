@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "../../../../../../../shared/terraform/aws-vpc"
+  source = "../../../../../terraform-modules/aws-vpc"
   name   = local.name
   azs = [
     "${local.region}a",
@@ -11,6 +11,13 @@ module "vpc" {
   public_subnets          = local.network.subnets.public
   transit_gateway_subnets = local.network.subnets.transit
   internet_gateway        = true
-  nat_gateways            = true
-  transit_gateway         = true
+  nat_gateways            = false
 }
+
+/*
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = 1
+  }
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = 1
+  }*/

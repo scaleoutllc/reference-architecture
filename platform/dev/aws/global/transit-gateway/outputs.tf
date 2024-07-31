@@ -1,3 +1,5 @@
-output "us-au-id" {
-  value = aws_ec2_transit_gateway_peering_attachment.us-au.id
-}
+# output "peering-attachment-id" {
+#   value = {
+#     us-east-1-to-ap-southeast-2 = module.peering-us-east-1-to-ap-southeast-2.attachment_id
+#   }
+# }

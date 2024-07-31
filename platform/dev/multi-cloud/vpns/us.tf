@@ -18,10 +18,10 @@ module "aws-us-gcp-us-vpn" {
 resource "aws_route" "aws-us-to-gcp-us" {
   provider = aws.us
   for_each = toset(concat(
-    nonsensitive(data.tfe_outputs.aws-us-network.values.private_route_table_ids),
-    nonsensitive(data.tfe_outputs.aws-us-network.values.public_route_table_ids),
+    data.tfe_outputs.aws-us-network.values.private_route_table_ids,
+    data.tfe_outputs.aws-us-network.values.public_route_table_ids,
   ))
   route_table_id         = each.value
-  destination_cidr_block = nonsensitive(data.tfe_outputs.gcp-us-network.values.config.cidr)
+  destination_cidr_block = data.tfe_outputs.gcp-us-network.values.config.cidr
   transit_gateway_id     = data.tfe_outputs.aws-us-network.values.transit_gateway_id
 }

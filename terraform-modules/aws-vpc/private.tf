@@ -2,7 +2,7 @@ resource "aws_subnet" "private" {
   count                   = length(var.private_subnets)
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.private_subnets[count.index]
-  availability_zone       = var.azs[count.index]
+  availability_zone       = var.azs[count.index % length(var.azs)]
   map_public_ip_on_launch = false
   tags = {
     Name = "${var.name}-private-${count.index + 1}"
@@ -33,7 +33,7 @@ resource "aws_eip" "nat-gateway" {
 resource "aws_nat_gateway" "main" {
   count         = var.nat_gateways ? length(var.private_subnets) : 0
   allocation_id = aws_eip.nat-gateway[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
+  subnet_id     = aws_subnet.private[count.index].id
   tags = {
     Name = "${var.name}-${count.index + 1}"
   }

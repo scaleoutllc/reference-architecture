@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "../../../../../../../shared/terraform/aws-vpc"
+  source = "../../../../../terraform-modules/aws-vpc"
   name   = local.name
   azs = [
     "${local.region}a",
@@ -7,10 +7,9 @@ module "vpc" {
     "${local.region}c"
   ]
   cidr                    = local.network.cidr
-  private_subnets         = local.network.subnets.private
   public_subnets          = local.network.subnets.public
+  private_subnets         = local.network.subnets.private
   transit_gateway_subnets = local.network.subnets.transit
   internet_gateway        = true
   nat_gateways            = true
-  transit_gateway         = true
 }

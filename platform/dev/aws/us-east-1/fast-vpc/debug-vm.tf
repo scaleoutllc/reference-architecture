@@ -11,21 +11,33 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-module "debug" {
+module "debug-private" {
   source                      = "terraform-aws-modules/ec2-instance/aws"
   ami                         = data.aws_ami.ubuntu.id
-  name                        = "debug"
+  name                        = "debug-private"
   instance_type               = "t2.micro"
   key_name                    = "tkellen"
   vpc_security_group_ids      = [aws_security_group.debug-ssh.id]
-  subnet_id                   = module.vpc.public_subnets[0]
+  subnet_id                   = module.vpc.private_subnet_ids[0]
+  associate_public_ip_address = true
+  user_data                   = "#!/bin/bash\nsudo apt-get update && sudo apt-get install netcat-openbsd -y"
+}
+
+module "debug-public" {
+  source                      = "terraform-aws-modules/ec2-instance/aws"
+  ami                         = data.aws_ami.ubuntu.id
+  name                        = "debug-public"
+  instance_type               = "t2.micro"
+  key_name                    = "tkellen"
+  vpc_security_group_ids      = [aws_security_group.debug-ssh.id]
+  subnet_id                   = module.vpc.public_subnet_ids[0]
   associate_public_ip_address = true
   user_data                   = "#!/bin/bash\nsudo apt-get update && sudo apt-get install netcat-openbsd -y"
 }
 
 resource "aws_security_group" "debug-ssh" {
   name   = "debug-ssh"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = module.vpc.id
   ingress {
     cidr_blocks = [
       "0.0.0.0/0"
@@ -42,11 +54,10 @@ resource "aws_security_group" "debug-ssh" {
   }
 }
 
-output "debug-vm" {
-  value = "ubuntu@${module.debug.public_ip}"
+output "debug-vm-private" {
+  value = "ubuntu@${module.debug-private.private_ip}"
 }
 
-output "debug-vm-private-ip" {
-  value = module.debug.private_ip
+output "debug-vm-public" {
+  value = "ubuntu@${module.debug-public.public_ip}"
 }
-

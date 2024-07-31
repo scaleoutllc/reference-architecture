@@ -3,17 +3,17 @@ locals {
   env      = "dev"
   provider = "aws"
   region   = "us-east-1"
-  locale   = "au"
   area     = "${local.team}-${local.env}-${local.provider}"
-  name     = "${local.area}-${local.locale}"
+  name     = "${local.area}-${local.region}"
+  network  = yamldecode(file("../../../networks.yml")).networks[local.env]["${local.provider}-${local.region}-${local.team}"]
 }
 
 terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "transit-dev-aws-au"
-      name    = "transit-dev-aws-au-network"
+      project = "platform-dev-aws"
+      name    = "platform-dev-aws-us-east-1-transit-vpc"
     }
   }
 }

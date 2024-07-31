@@ -2,18 +2,26 @@ output "id" {
   value = aws_vpc.main.id
 }
 
-output "private_subnets_ids" {
+output "private_subnet_ids" {
   value = aws_subnet.private[*].id
 }
 
-output "public_subnets_ids" {
+output "public_subnet_ids" {
   value = aws_subnet.public[*].id
 }
 
-output "transit_subnets_ids" {
-  value = aws_subnet.transit-gateway[*].id
+output "transit_subnet_ids" {
+  value = aws_subnet.transit[*].id
 }
 
-output "internet_gateway_ids" {
-  value = aws_internet_gateway.main[*].id
+output "private_route_table_ids" {
+  value = aws_route_table.private[*].id
+}
+
+output "public_route_table_ids" {
+  value = aws_route_table.public[*].id
+}
+
+output "transit_route_table_ids" {
+  value = aws_route_table.transit[*].id
 }
