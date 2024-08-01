@@ -13,8 +13,8 @@ terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-global"
-      name    = "fast-dev-global-aws-load-balancer"
+      project = "platform-dev-aws"
+      name    = "platform-dev-aws-global-accelerator"
     }
   }
 }

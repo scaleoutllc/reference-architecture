@@ -33,10 +33,10 @@ resource "google_compute_instance" "debug" {
   tags = ["debug-vm"]
 }
 
-output "debug-vm" {
+output "debug-ssh" {
   value = "root@${google_compute_instance.debug.network_interface.0.access_config.0.nat_ip}"
 }
 
-output "debug-vm-private-ip" {
+output "debug-ip" {
   value = google_compute_instance.debug.network_interface.0.network_ip
 }

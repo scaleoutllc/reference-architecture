@@ -22,8 +22,8 @@ terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-global"
-      name    = "fast-dev-global-gcp-load-balancer"
+      project = "platform-dev-gcp"
+      name    = "platform-dev-gcp-global-load-balancer"
     }
   }
 }

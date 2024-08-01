@@ -3,7 +3,7 @@ terraform {
     organization = "scaleout"
     workspaces {
       project = "providers"
-      name    = "providers-istio-dev-ca"
+      name    = "providers-istio-ca-dev"
     }
   }
 }

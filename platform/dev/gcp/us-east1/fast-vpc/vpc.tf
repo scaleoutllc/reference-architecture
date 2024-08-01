@@ -5,7 +5,7 @@ resource "google_compute_network" "main" {
 }
 
 resource "google_compute_subnetwork" "main" {
-  name                     = local.locale
+  name                     = local.region
   ip_cidr_range            = local.network.subnets.cluster
   network                  = google_compute_network.main.self_link
   private_ip_google_access = true

@@ -3,17 +3,17 @@ locals {
   env      = "dev"
   provider = "gcp"
   region   = "us-east1"
-  locale   = "us"
   area     = "${local.team}-${local.env}-${local.provider}"
-  name     = "${local.area}-${local.locale}"
+  name     = "${local.area}-${local.region}"
+  network  = yamldecode(file("../../../networks.yml")).networks[local.env]["${local.provider}-${local.region}-${local.team}"]
 }
 
 terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-gcp-us"
-      name    = "fast-dev-gcp-us-network"
+      project = "platform-dev-gcp"
+      name    = "platform-dev-gcp-us-east1-fast-vpc"
     }
   }
 }
@@ -21,9 +21,4 @@ terraform {
 provider "google" {
   project = local.area
   region  = local.region
-}
-
-data "tfe_outputs" "hub" {
-  organization = "scaleout"
-  workspace    = "fast-dev-global-gcp-network-connectivity-hub"
 }

@@ -3,17 +3,16 @@ locals {
   env      = "dev"
   provider = "gcp"
   region   = "global"
-  locale   = "global"
   area     = "${local.team}-${local.env}-${local.provider}"
-  name     = "${local.area}-${local.locale}"
+  name     = "${local.area}-${local.region}"
 }
 
 terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "fast-dev-global"
-      name    = "fast-dev-global-gcp-network-connectivity-hub"
+      project = "platform-dev-gcp"
+      name    = "platform-dev-gcp-routing"
     }
   }
 }

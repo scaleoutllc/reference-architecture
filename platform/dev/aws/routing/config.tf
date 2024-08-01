@@ -11,8 +11,8 @@ terraform {
   cloud {
     organization = "scaleout"
     workspaces {
-      project = "platform-dev-aws-global"
-      name    = "platform-dev-aws-global-routing"
+      project = "platform-dev-aws"
+      name    = "platform-dev-aws-routing"
     }
   }
 }
