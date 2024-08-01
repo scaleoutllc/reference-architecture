@@ -20,7 +20,6 @@ module "debug-private" {
   vpc_security_group_ids      = [aws_security_group.debug-ssh.id]
   subnet_id                   = module.vpc.private_subnet_ids[0]
   associate_public_ip_address = false
-  user_data                   = "#!/bin/bash\nsudo apt-get update && sudo apt-get install netcat-openbsd -y"
 }
 
 resource "aws_security_group" "debug-ssh" {
@@ -40,6 +39,10 @@ resource "aws_security_group" "debug-ssh" {
   }
 }
 
-output "debug-vm-private" {
+output "debug-ssh" {
   value = "ubuntu@${module.debug-private.private_ip}"
+}
+
+output "debug-ip" {
+  value = nonsensitive(module.debug-private.private_ip)
 }

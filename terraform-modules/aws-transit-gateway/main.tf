@@ -16,7 +16,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
   transit_gateway_default_route_table_propagation = false
   transit_gateway_default_route_table_association = false
   tags = {
-    Name = var.name
+    Name = var.egress_vpc.name
   }
 }
 resource "aws_ec2_transit_gateway_route_table_association" "spoke-inbound" {

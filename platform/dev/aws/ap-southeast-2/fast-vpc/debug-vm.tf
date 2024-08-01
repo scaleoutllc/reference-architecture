@@ -40,6 +40,10 @@ resource "aws_security_group" "debug-ssh" {
   }
 }
 
-output "debug-vm-private" {
+output "debug-ssh" {
   value = "ubuntu@${module.debug-private.private_ip}"
+}
+
+output "debug-ip" {
+  value = nonsensitive(module.debug-private.private_ip)
 }

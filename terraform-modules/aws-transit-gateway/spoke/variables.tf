@@ -1,7 +1,3 @@
-variable "name" {
-  type = string
-}
-
 variable "transit_gateway" {
   type = object({
     id                                = string
@@ -13,7 +9,8 @@ variable "transit_gateway" {
 
 variable "spoke_vpc" {
   type = object({
-    id = string
+    id   = string
+    name = string
     layout = object({
       cidr = string
     })

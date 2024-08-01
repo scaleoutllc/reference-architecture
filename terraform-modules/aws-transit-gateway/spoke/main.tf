@@ -6,8 +6,13 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "spoke" {
   transit_gateway_default_route_table_propagation = false
   transit_gateway_default_route_table_association = false
   tags = {
-    Name = "${var.name}-spoke"
+    Name = "${var.spoke_vpc.name}-spoke"
   }
+}
+
+resource "aws_ec2_transit_gateway_route_table_propagation" "spoke" {
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.spoke.id
+  transit_gateway_route_table_id = var.transit_gateway.outbound_route_table_id
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "spoke-uses-egress-vpc-for-internet" {

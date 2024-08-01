@@ -21,7 +21,7 @@ groups:
       deps:
         workspaces:
         # This peers all AWS VPCs as spokes to a transit gateway.
-        - platform/dev/aws/global/transit-gateway
+        - platform/dev/aws/global/routing
       # This hub enables direct routing between separate/regional VPCs in
       # GCP. It must exist before regional networks are created. Each VPC
       # will join this hub as a spoke at creation time. Using a single

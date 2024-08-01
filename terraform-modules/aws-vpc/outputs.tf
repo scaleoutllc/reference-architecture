@@ -2,6 +2,10 @@ output "id" {
   value = aws_vpc.main.id
 }
 
+output "name" {
+  value = var.name
+}
+
 output "private_subnet_ids" {
   value = aws_subnet.private[*].id
 }

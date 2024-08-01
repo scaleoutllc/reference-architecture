@@ -9,7 +9,6 @@ module "transit-gateway-us-east-1" {
 
 module "spoke-us-east-1-fast" {
   source          = "../../../../../terraform-modules/aws-transit-gateway/spoke"
-  name            = "us-east-1-fast"
   transit_gateway = module.transit-gateway-us-east-1
   spoke_vpc       = data.tfe_outputs.us-east-1-fast-vpc.values.vpc
   providers = {

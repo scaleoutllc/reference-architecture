@@ -5,13 +5,28 @@ resource "aws_ec2_transit_gateway_peering_attachment" "main" {
   peer_region             = var.peer.region
   peer_transit_gateway_id = var.peer.transit_gateway_id
   tags = {
-    Name = var.name
+    Name = "${var.accepter.name}-peer-${var.peer.name}"
   }
 }
 
 resource "aws_ec2_transit_gateway_peering_attachment_accepter" "main" {
   provider                      = aws.peer
   transit_gateway_attachment_id = aws_ec2_transit_gateway_peering_attachment.main.id
+  tags = {
+    Name = "${var.peer.name}-peer-${var.accepter.name}"
+  }
+}
+
+resource "aws_ec2_transit_gateway_route_table_association" "peer" {
+  provider                       = aws.peer
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_peering_attachment_accepter.main.id
+  transit_gateway_route_table_id = var.peer.route_table_id
+}
+
+resource "aws_ec2_transit_gateway_route_table_association" "accepter" {
+  provider                       = aws.accepter
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_peering_attachment.main.id
+  transit_gateway_route_table_id = var.accepter.route_table_id
 }
 
 // peering gateways does not make them share routes over bgp.
