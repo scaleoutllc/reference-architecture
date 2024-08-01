@@ -25,23 +25,23 @@ function duration {
 }
 
 # Bail if the command isn't correct.
-if [[ "$#" -ne 3 || ! "$1" =~ ^(validate|apply|destroy)$ ]]; then
-  echo "Usage: $0 <validate|apply|destory> <environment> <group>"
+if [[ "$#" -ne 2 || ! "$1" =~ ^(validate|apply|destroy)$ ]]; then
+  echo "Usage: $0 <validate|apply|destory> <group>"
   exit 1
 fi
 
 # Read in the Infrafile.
-INFRAFILE=$( yq -o json "${SCRIPT_PATH}/../Infrafile")
+INFRAFILE=$(spruce json "${SCRIPT_PATH}/../Infrafile")
 
 # Find the environment and group of workspaces requested.
-workspaces=$(jq --arg inf "$2" --arg env "$3" '.environments[$inf].groups[$env]' <<<"$INFRAFILE")
+workspaces=$(jq --arg env "$2" '.groups[$env]' <<<"$INFRAFILE")
 if [[ "${workspaces}" == "null" ]]; then
-  echo "Environment '$2' does not contain group '$3'."
+  echo "Infrastructure group '$2'. not found."
   exit 1
 fi
 
-# Move to the base directory of environmet.
-cd "${SCRIPT_PATH}/../$(jq -r '.basedir' <<<"$INFRAFILE")"
+# Move to the base directory of the repo.
+cd "${SCRIPT_PATH}/../"
 
 # Fetch all the workspaces to operate on.
 readarray -t groups < <(traverse "$workspaces")
@@ -59,6 +59,7 @@ source "${SCRIPT_PATH}/../.env"
 
 # Run terraform across all workspaces as fast as possible.
 for group in "${groups[@]}"; do
+  parallel --ungroup tf init ::: ${group}
   parallel --ungroup tf $1 ::: ${group}
 done
 secs=$(($(date +%s)-start))
