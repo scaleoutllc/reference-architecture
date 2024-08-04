@@ -3,64 +3,28 @@
 set -euo pipefail
 SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
 
-# Capture start time.
-start=$(date +%s)
+# Add script path to path so we can call "infra" without a full path.
+export PATH="${PATH}:${SCRIPT_PATH}"
 
-# Add script path to path so we can call "tf" without a full path.
-PATH="${PATH}:${SCRIPT_PATH}"
-
-# Recursively find workspaces that can be applied in parallel for an env.
-function traverse {
-  jq -r '.workspaces | join(" ")' <<<"$1"
-  local deps=$(jq -c '.deps?' <<<"$1")
-  if [[ "$deps" != "null" ]]; then
-    traverse "$deps"
-  fi
+function usage {
+  echo "Usage: $0 [--dry-run] <validate|apply|destroy> <group>"
+  exit 1
 }
 
-function duration {
-  (($1 >= 3600)) && printf '%02d:' $(($1 / 3600 % 24))
-  (($1 >= 60)) && printf '%02d:' $(($1 / 60 % 60))
-  printf '%02d%s\n' $(($1 % 60)) "$( (($1 < 60 )) && echo 's' || echo '')"
-}
+[[ "$#" -lt 1 ]] && usage
 
-# Bail if the command isn't correct.
-if [[ "$#" -ne 3 || ! "$1" =~ ^(validate|apply|destroy)$ ]]; then
-  echo "Usage: $0 <validate|apply|destory> <environment> <group>"
-  exit 1
+export DRY_RUN=false
+if [[ "$1" == "--dry-run" ]]; then
+    DRY_RUN="true"
+    shift
 fi
 
-# Read in the Infrafile.
-INFRAFILE=$( yq -o json "${SCRIPT_PATH}/../Infrafile")
-
-# Find the environment and group of workspaces requested.
-workspaces=$(jq --arg inf "$2" --arg env "$3" '.environments[$inf].groups[$env]' <<<"$INFRAFILE")
-if [[ "${workspaces}" == "null" ]]; then
-  echo "Environment '$2' does not contain group '$3'."
-  exit 1
+DEP_ORDER="cat"
+if [[ "$1" == "destroy"  ]]; then
+  DEP_ORDER="tac"
 fi
 
-# Move to the base directory of environmet.
-cd "${SCRIPT_PATH}/../$(jq -r '.basedir' <<<"$INFRAFILE")"
-
-# Fetch all the workspaces to operate on.
-readarray -t groups < <(traverse "$workspaces")
-
-# Reverse the order of the workspaces for destroy.
-if [[ $1 == "destroy" ]]; then
-  for (( i=${#groups[@]}-1; i>=0; i-- )); do
-    rev+=( "${groups[i]}" )
-  done
-  groups=("${rev[@]}")
-fi
-
-# Populate environment.
-source "${SCRIPT_PATH}/../.env"
-
-# Run terraform across all workspaces as fast as possible.
-for group in "${groups[@]}"; do
-  parallel --ungroup tf $1 ::: ${group}
+deps $2 | $DEP_ORDER | while IFS= read -r line; do
+  parallel --ungroup tf init ::: ${line}
+  parallel --ungroup tf $1 ::: ${line}
 done
-secs=$(($(date +%s)-start))
-echo "Completed '$@' in $(duration $secs)."
-

@@ -1,11 +1,23 @@
 #!/usr/bin/env bash
-# A convenience script for running terraform in parallel.
+# A convenience script for running terraform on environments.
 set -euo pipefail
 SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
 
-approve=""
-if [[ $1 != "validate" ]]; then
-  approve="-auto-approve"
+# Move to the base directory of the repo for environments.
+cd "${SCRIPT_PATH}/../environments"
+
+# Populate environment.
+source "${SCRIPT_PATH}/../.env"
+
+flags=""
+if [[ $1 =~ ^(apply|destroy)$ ]]; then
+  flags=" -auto-approve -parallelism=20"
 fi
-terraform -chdir=$2 init 2>&1 | sed "s@^@[$2]\: @"
-terraform -chdir=$2 $1 -parallelism=20 $approve 2>&1 | sed "s@^@[$2]\: @"
+
+GREEN='\033[0;31m'
+NC='\033[0m'
+echo -e "${GREEN}terraform -chdir=$2 $1$flags${NC}"
+
+if [[ $DRY_RUN == "false" ]]; then
+  terraform -chdir=$2 $1$flags 2>&1 | sed "s@^@[$2]\: @"
+fi

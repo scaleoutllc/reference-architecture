@@ -1,134 +1,161 @@
-# This file describes infrastructure dependencies within terraform workspaces.
-# It is used to rapidly create and destroy a complex global multi-cloud meshed
-# network of kubernetes clusters.
-basedir: infrastructure/environments
-environments:
-  # This is the entry point for standing up a development environment for the
-  # "fast" team. In a real world context, fast could be replaced with the name
-  # of a department, organizational initiative, etc.
+groups:
+  # This manages all networks and clusters as one.
   fast-dev:
-    # Each key under groups defines a collection of workspaces responsible for
-    # managing a logical portion of the infrastructure.
     groups:
-      # The network group manages all networks in all clouds and links them
-      # together so they can communicate as one. It must be created before any
-      # of the clusters. Network connectivity between VPCs and clouds can be
-      # validated using `bin/test-network`.
-      network:
-        # This workspace stands up all of the Terraform Cloud workspaces that
-        # the network and clusters will be deployed into.
-        workspaces:
-        - ../terraform-cloud/environments/fast/dev
-        deps:
-          workspaces:
-          # This hub enables direct routing between separate/regional VPCs in
-          # GCP. It must exist before regional networks are created. Each VPC
-          # will join this hub as a spoke at creation time. Using a single
-          # global VPC in GCP is also possible and less complex. The decision
-          # to use GCP's network connectivity hub is based on long experience
-          # with large organizations where silos between teams often prevent a
-          # truly unified approach to network. Additionally on-prem networks
-          # can be joined to the hub in the same manner.
-          - fast/dev/gcp/global/network-connectivity-hub
-          # This load balancer is a global entry point to all regional GCP
-          # clusters. It must exist before GKE clusters are created. An
-          # istio-gateway service running in each regional GKE cluster will
-          # associate its pods with this global load balancer directly.
-          - fast/dev/gcp/global/load-balancer
-          # This L4 load balancer (AWS Accelerator) is a global entrypoint to
-          # all regional AWS clusters. It must exist before EKS clusters are
-          # created. Each regional EKS cluster has a load balancer that will
-          # be associated with the "accelerator".
-          - fast/dev/aws/global/load-balancer
-          deps:
-            workspaces:
-            # These are AWS networks. Each contains a transit gateway that can
-            # be peered with others to allow cross region / account VPC
-            # networking. Pods in one cluster will have direct connectivity to
-            # pods in the other. This makes east-west routing as simple as it
-            # possibly can me.
-            - fast/dev/aws/au/network
-            - fast/dev/aws/us/network
-            # These are GCP networks. Each will join the network connectivity
-            # hub as a spoke at creation time. Pods in one cluster will have
-            # direct connectivity to pods in the other. This makes east-west
-            # routing as simple as it possibly can me.
-            - fast/dev/gcp/au/network
-            - fast/dev/gcp/us/network
-            deps:
-              workspaces:
-              # This peers all AWS transit gateways together once they exist.
-              - fast/dev/aws/global/transit-gateway-peering
-              deps:
-                workspaces:
-                # This creates VPN links between the VPCs of each cloud region
-                # pair (e.g. aws-au->gcp-au / aws-us->gcp-us) with BGP peered
-                # routing.
-                # TODO:
-                #   establish routes from disparate provider/region pairs, it
-                #   is still not possible for aws-au to reach gcp-us etc.
-                - fast/dev/multi-cloud
+    - network-dev-aws
+    - network-dev-gcp
+    next:
+      groups:
+      - fast-dev-aws-clusters
+      - fast-dev-gcp-clusters
 
-      # Each of the groups below represents a regional cluster in one of the
-      # supported cloud providers.
-      gcp-us:
+  # This manages all networks in all clouds in all regions as one. The
+  # resultant networks are meshed with a combination of primitives from
+  # each provider. By default every network can directly reach every
+  # other other network regardless of the provider or region it resides
+  # in. Connectivity can be tested with `bin/test-network`.
+  network-dev:
+    groups:
+    - network-dev-aws
+    - network-dev-gcp
+    next:
+      workspaces:
+      # This creates VPN links between the VPCs of each cloud region pair
+      # (e.g. aws-au->gcp-au / aws-us-east-1->gcp-us) with BGP peered routing.
+      - shared/dev/multi-cloud/routing
+  
+  # This manages the AWS networks as one. All VPCs are peered as spokes to a
+  # transit gateway. They can communicate directly with one another and
+  # route all egress through a shared transit VPC. Impossibly complex stuff
+  # compared to GCP.
+  network-dev-aws:
+    groups:
+    - network-dev-aws-us
+    - network-dev-aws-au
+    next:
+      workspaces:
+      - shared/dev/aws/global/routing
+
+  # This manages the US AWS network only.
+  network-dev-aws-us:
+    workspaces:
+    - shared/dev/aws/us-east-1/network
+    - fast/dev/aws/us-east-1/network
+
+  # This manages the Australian AWS network only.
+  network-dev-aws-au:
+    workspaces:
+    - shared/dev/aws/ap-southeast-2/network
+    - fast/dev/aws/ap-southeast-2/network
+
+  # This manages all GCP networks as one and meshes them together using a
+  # Network Connectivity Hub with each regional VPC as a spoke. A single
+  # global VPC in GCP is also possible and arguably less complex.
+  # 
+  #The decision to use GCP's network connectivity hub is based on long
+  # experience with large organizations where silos between teams often
+  # prevent a truly unified approach to networking. Additionally this
+  # provides networking parity for on-prem networks joining the mesh.
+  network-dev-gcp:
+    workspaces:
+    - shared/dev/gcp/global/network
+    - fast/dev/gcp/global/network
+    next:
+      groups:
+      - network-dev-gcp-us
+      - network-dev-gcp-au
+      next:
         workspaces:
-        - fast/dev/gcp/us/cluster
-        deps:
-          workspaces:
-          - fast/dev/gcp/us/nodes
-          deps:
-            workspaces:
-            - fast/dev/gcp/us/namespaces/autoneg-system
-            - fast/dev/gcp/us/namespaces/kube-system
-            - fast/dev/gcp/us/namespaces/istio-system
-            deps:
-              workspaces:
-              - fast/dev/gcp/us/namespaces/ingress
- 
-      gcp-au:
+        - shared/dev/gcp/global/routing
+  
+  # This manages the US GCP network.
+  network-dev-gcp-us:
+    workspaces:
+    - shared/dev/gcp/us-east1/network
+    - fast/dev/gcp/us-east1/network
+
+  # This manages the Austrlian GCP network.
+  network-dev-gcp-au:
+    workspaces:
+    - shared/dev/gcp/australia-southeast1/network
+    - fast/dev/gcp/australia-southeast1/network
+
+  # This manages all GCP clusters.
+  fast-dev-gcp-clusters:
+    groups:
+    - fast-dev-gcp-us-cluster
+    - fast-dev-gcp-au-cluster
+    next:
+      workspaces:
+      # This load balancer is a global entry point to all regional GCP clusters
+      # for the fast-dev environment. It must exist before GKE clusters are
+      # created. An istio-gateway service running in each regional GKE cluster
+      # will associate its pods with this global load balancer directly.
+      - fast/dev/gcp/global/load-balancer
+
+  # This manages the US GCP cluster.
+  fast-dev-gcp-us-cluster:
+    workspaces:
+    - fast/dev/gcp/us-east1/cluster
+    next:
+      workspaces:
+      - fast/dev/gcp/us-east1/namespaces/autoneg-system
+      - fast/dev/gcp/us-east1/namespaces/kube-system
+      - fast/dev/gcp/us-east1/namespaces/istio-system
+      next:
         workspaces:
-        - fast/dev/gcp/au/cluster
-        deps:
-          workspaces:
-          - fast/dev/gcp/au/nodes
-          deps:
-            workspaces:
-            - fast/dev/gcp/au/namespaces/autoneg-system
-            - fast/dev/gcp/au/namespaces/kube-system
-            - fast/dev/gcp/au/namespaces/istio-system
-            deps:
-              workspaces:
-              - fast/dev/gcp/au/namespaces/ingress
-      
-      aws-us:
+        - fast/dev/gcp/us-east1/namespaces/ingres
+
+  # This manages the Australian GCP cluster.
+  fast-dev-gcp-au-cluster:
+    workspaces:
+    - fast/dev/gcp/australia-southeast1/cluster
+    next:
+      workspaces:
+      - fast/dev/gcp/australia-southeast1/namespaces/autoneg-system
+      - fast/dev/gcp/australia-southeast1/namespaces/kube-system
+      - fast/dev/gcp/australia-southeast1/namespaces/istio-system
+      next:
         workspaces:
-        - fast/dev/aws/us/cluster
-        deps:
-          workspaces:
-          - fast/dev/aws/us/nodes
-          deps:
-            workspaces:
-            - fast/dev/aws/us/namespaces/kube-system
-            deps:
-              workspaces:
-              - fast/dev/aws/us/namespaces/istio-system
-              deps:
-                workspaces:
-                - fast/dev/aws/us/namespaces/ingress
-         
-      aws-au:
+        - fast/dev/gcp/australia-southeast1/namespaces/ingres
+
+  # This manages all AWS clusters as one.
+  fast-dev-aws-clusters:
+    # This L4 load balancer (AWS Accelerator) is a global entrypoint to
+    # all regional AWS clusters for the fast environment. It must exist
+    # before EKS clusters are created. Each regional EKS cluster has a
+    # load balancer that will be associated with this.
+    workspaces:
+    - fast/dev/aws/global/accelerator
+    next:
+      groups:
+      - fast-dev-aws-us-cluster
+      - fast-dev-aws-au-cluster
+
+  # This manages the US AWS cluster.
+  fast-dev-aws-us-cluster:
+    workspaces:
+    - fast/dev/aws/us-east-1/cluster
+    next:
+      workspaces:
+      - fast/dev/aws/us-east-1/namespaces/kube-system
+      next:
         workspaces:
-        - fast/dev/aws/au/cluster
-        deps:
+        - fast/dev/aws/us-east-1/namespaces/istio-system
+        next:
           workspaces:
-          - fast/dev/aws/au/nodes
-          deps:
-            workspaces:
-            - fast/dev/aws/au/namespaces/kube-system
-            deps:
-              workspaces:
-              - fast/dev/aws/au/namespaces/istio-system
-              deps:
-                workspaces:
-                - fast/dev/aws/au/namespaces/ingress
+          - fast/dev/aws/us-east-1/namespaces/ingress
+
+  # This manages the Australian AWS cluster.
+  fast-dev-aws-au-cluster:
+    workspaces:
+    - fast/dev/aws/ap-southeast-2/cluster
+    next:
+      workspaces:
+      - fast/dev/aws/ap-southeast-2/namespaces/kube-system
+      next:
+        workspaces:
+        - fast/dev/aws/ap-southeast-2/namespaces/istio-system
+        next:
+          workspaces:
+          - fast/dev/aws/ap-southeast-2/namespaces/ingress
