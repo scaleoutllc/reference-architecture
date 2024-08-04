@@ -4,33 +4,18 @@
 set -euo pipefail
 SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
 
-INFRA_PATH="${SCRIPT_PATH}/../infrastructure/environments/fast/dev"
-
-envs=(aws-us aws-au gcp-us gcp-au)
+TEST_PATH="${SCRIPT_PATH}/../environments/shared/dev/multi-cloud/testing"
 
 function endlessRemote {
-  ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-    $1 "bash -c 'while true; do results=\$($2); echo \"\$results\"; done'"
+  $1 "bash -c 'sudo apt-get update && sudo apt-get install netcat-openbsd -y && while true; do results=\$($2); echo \"\$results\"; done'"
 }
 
-
 echo "Gathering network configuration..."
-vms=()
-ips=()
-# Iterate over all environments.
-for env in "${envs[@]}"; do
-  # Find the path to the network for the environment of this iteration.
-  cd "${INFRA_PATH}/${env//-//}/network"
-  # Fetch the user@host for the debug vm in the environment of this iteration.
-  vm=$(terraform output -raw debug-vm)
-  # Fetch the private ip for the debug vm in the environment of this iteration.
-  ip=$(terraform output -raw debug-vm-private-ip)
-  # Populate the array of debug vms and their private ips.
-  vms+=($vm)
-  ips+=($ip)
-  # Show what was found.
-  echo "$env: $vm ($ip)"
-done
+terraform -chdir="${TEST_PATH}" init 2>&1 > /dev/null
+terraform -chdir="${TEST_PATH}" refresh 2>&1 > /dev/null
+envs=($(terraform -chdir="${TEST_PATH}" output -raw envs))
+mapfile -t ssh < <(terraform -chdir="${TEST_PATH}" output -raw ssh)
+ips=($(terraform -chdir="${TEST_PATH}" output -raw ips))
 echo "Done."
 
 echo "Repeatedly testing connectivity until manually exited..."
@@ -48,7 +33,7 @@ for envIdx in "${!envs[@]}"; do
       tests+="nc -zv -w1 ${ips[$ipIdx]} 22 2>&1 | GREP_COLORS=\"mt=01;32\" grep --color=always -E \"succeeded|$\" | GREP_COLORS=\"mt=01;31\" grep --color=always -E \"timed out|$\";"
     fi
   done
-  endlessRemote "${vms[$envIdx]}" "${tests}" &
+  endlessRemote "${ssh[$envIdx]}" "${tests}" &
 done
 wait
 

@@ -1,0 +1,110 @@
+networks:
+  dev:
+    aws-us-east-1-shared:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.1.0.0&mask=23&division=13.7230
+      # Subnets left for future expansion:
+      # 10.1.1.224/27 - 30
+      asn: 64601
+      cidr: 10.1.0.0/23
+      subnets:
+        private:
+        - 10.1.0.192/26
+        - 10.1.1.0/26	
+        - 10.1.1.64/26
+        public:
+        - 10.1.1.128/27	
+        - 10.1.1.160/27
+        - 10.1.1.192/27
+        transit:
+        - 10.1.0.0/26
+        - 10.1.0.64/26
+        - 10.1.0.128/26
+    aws-ap-southeast-2-shared:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.2.0.0&mask=23&division=13.7230
+      # Subnets left for future expansion:
+      # 10.2.1.224/27 - 30
+      asn: 64602
+      cidr: 10.2.0.0/23
+      subnets:
+        private:
+        - 10.2.0.192/26
+        - 10.2.1.0/26	
+        - 10.2.1.64/26
+        public:
+        - 10.2.1.128/27	
+        - 10.2.1.160/27
+        - 10.2.1.192/27
+        transit:
+        - 10.2.0.0/26
+        - 10.2.0.64/26
+        - 10.2.0.128/26
+    gcp-us-east1-shared:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.3.0.0&mask=23&division=1.0
+      asn: 64603
+      cidr: 10.3.0.0/23
+    gcp-australia-southeast1-shared:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.3.0.0&mask=23&division=1.0
+      asn: 64604
+      cidr: 10.4.0.0/23
+    aws-us-east-1-fast:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.10.0.0&mask=20&division=25.3d4dc40
+      # Subnets left for future expansion:
+      # 10.10.15.192/28 - 15
+      asn: 64010
+      cidr: 10.10.0.0/20
+      subnets:
+        private:
+        - 10.10.0.0/22
+        - 10.10.4.0/22
+        - 10.10.8.0/22
+        - 10.10.12.0/24
+        - 10.10.13.0/24
+        - 10.10.14.0/24
+        public:
+        - 10.10.15.0/26
+        - 10.10.15.64/26
+        - 10.10.15.128/26
+        transit:
+        - 10.10.15.208/28
+        - 10.10.15.224/28
+        - 10.10.15.240/28
+    aws-ap-southeast-2-fast:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.20.0.0&mask=20&division=25.3d4dc40
+      # Subnets left for future expansion:
+      # 10.20.15.192/28 - 15
+      asn: 64020
+      cidr: 10.20.0.0/20
+      subnets:
+        private:
+        - 10.20.0.0/22
+        - 10.20.4.0/22
+        - 10.20.8.0/22
+        - 10.20.12.0/24
+        - 10.20.13.0/24
+        - 10.20.14.0/24
+        public:
+        - 10.20.15.0/26
+        - 10.20.15.64/26
+        - 10.20.15.128/26
+        transit:
+        - 10.20.15.208/28
+        - 10.20.15.224/28
+        - 10.20.15.240/28
+    gcp-us-east1-fast:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.30.0.0&mask=20&division=7.51 
+      asn: 64630
+      cidr: 10.30.0.0/20
+      subnets:
+        cluster: 10.30.12.0/23
+        pods: 10.30.0.0/21
+        services: 10.30.8.0/22
+        private: 10.30.14.0/23
+    gcp-australia-southeast1-fast:
+      # https://www.davidc.net/sites/default/subnets/subnets.html?network=10.40.0.0&mask=20&division=7.51
+      asn: 64640
+      cidr: 10.40.0.0/20 
+      subnets:
+        cluster: 10.40.12.0/23
+        pods: 10.40.0.0/21
+        services: 10.40.8.0/22
+        private: 10.40.14.0/23
