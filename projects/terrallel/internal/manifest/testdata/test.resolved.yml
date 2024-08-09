@@ -1,0 +1,118 @@
+clusterOne:
+    workspaces:
+        - fast/dev/aws/us-east-1/cluster
+    next:
+        workspaces:
+            - fast/dev/aws/us-east-1/nodes
+        next:
+            workspaces:
+                - fast/dev/aws/us-east-1/namespaces/kube-system
+clusterTwo:
+    workspaces:
+        - fast/dev/aws/ap-southeast-2/cluster
+    next:
+        workspaces:
+            - fast/dev/aws/ap-southeast-2/nodes
+        next:
+            workspaces:
+                - fast/dev/aws/ap-southeast-2/namespaces/kube-system
+clusters:
+    group:
+        - workspaces:
+            - fast/dev/aws/us-east-1/cluster
+          next:
+            workspaces:
+                - fast/dev/aws/us-east-1/nodes
+            next:
+                workspaces:
+                    - fast/dev/aws/us-east-1/namespaces/kube-system
+        - workspaces:
+            - fast/dev/aws/ap-southeast-2/cluster
+          next:
+            workspaces:
+                - fast/dev/aws/ap-southeast-2/nodes
+            next:
+                workspaces:
+                    - fast/dev/aws/ap-southeast-2/namespaces/kube-system
+doubleIndirectGroup:
+    group:
+        - group:
+            - workspaces:
+                - foo
+                - bar
+finalBoss:
+    group:
+        - workspaces:
+            - first
+            - second
+          next:
+            group:
+                - workspaces:
+                    - foo
+                    - bar
+                - workspaces:
+                    - foo-parallel
+                    - bar-parallel
+            next:
+                workspaces:
+                    - last
+    next:
+        workspaces:
+            - finito
+groupAndNestedWorkspace:
+    group:
+        - workspaces:
+            - foo
+            - bar
+        - workspaces:
+            - foo-parallel
+            - bar-parallel
+    next:
+        workspaces:
+            - baz
+            - qux
+nestedEverything:
+    workspaces:
+        - first
+    next:
+        group:
+            - workspaces:
+                - foo
+                - bar
+            - workspaces:
+                - foo-parallel
+                - bar-parallel
+        next:
+            workspaces:
+                - almost-last
+            next:
+                workspaces:
+                    - last
+noDepsOne:
+    workspaces:
+        - foo
+        - bar
+noDepsTwo:
+    workspaces:
+        - foo-parallel
+        - bar-parallel
+onlyGroup:
+    group:
+        - workspaces:
+            - foo
+            - bar
+workspacesThenGroup:
+    workspaces:
+        - first
+        - second
+    next:
+        group:
+            - workspaces:
+                - foo
+                - bar
+            - workspaces:
+                - foo-parallel
+                - bar-parallel
+        next:
+            workspaces:
+                - last

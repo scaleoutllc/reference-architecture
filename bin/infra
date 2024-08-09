@@ -11,7 +11,7 @@ function usage {
   exit 1
 }
 
-[[ "$#" -lt 1 ]] && usage
+[[ "$#" -lt 2 ]] && usage
 
 export DRY_RUN=false
 if [[ "$1" == "--dry-run" ]]; then
@@ -24,7 +24,7 @@ if [[ "$1" == "destroy"  ]]; then
   DEP_ORDER="tac"
 fi
 
-deps $2 | $DEP_ORDER | while IFS= read -r line; do
-  parallel --ungroup tf init ::: ${line}
-  parallel --ungroup tf $1 ::: ${line}
+terrallel $2 | $DEP_ORDER | while IFS= read -r line; do
+  parallel --ungroup --halt soon,done=100% --term-seq INT,600000 tf init ::: ${line}
+  parallel --ungroup --halt soon,done=100% --term-seq INT,600000 tf $1 ::: ${line}
 done

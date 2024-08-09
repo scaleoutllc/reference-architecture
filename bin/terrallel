@@ -1,0 +1,7 @@
+#!/bin/bash
+# A convenience script for calculating terraform workspace dependencies.
+set -euo pipefail
+SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
+
+# Execute jq script with the target group "test"
+cd "${SCRIPT_PATH}/../projects/terrallel" && go run ./ -f "../../Infrafile" $1

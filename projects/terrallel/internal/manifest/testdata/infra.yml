@@ -1,4 +1,12 @@
 targets:
+  # This manages all networks and clusters as one.
+  fast-dev:
+    group:
+    - network-dev-mesh
+    next:
+      group:
+      - fast-dev-cluster-mesh
+
   # This manages all networks in all clouds in all regions as one. The
   # resultant networks are meshed with a combination of primitives from
   # each provider. By default every network can directly reach every
@@ -14,14 +22,6 @@ targets:
       # (e.g. aws-au->gcp-au / aws-us-east-1->gcp-us) with BGP peered routing.
       - shared/dev/multi-cloud/routing
   
-  # This manages all clusters in all providers:
-  fast-dev-cluster-mesh:
-    group:
-    - fast-dev-gcp-clusters
-    - fast-dev-aws-clusters
-    #next:
-    #TODO: istio setup workspaces here
-
   # This manages the AWS networks as one. All VPCs are peered as spokes to a
   # transit gateway. They can communicate directly with one another and
   # route all egress through a shared transit VPC. Impossibly complex stuff
@@ -78,18 +78,26 @@ targets:
     - shared/dev/gcp/australia-southeast1/network
     - fast/dev/gcp/australia-southeast1/network
 
+  # This manages all clusters in all providers:
+  fast-dev-cluster-mesh:
+    group:
+    - fast-dev-gcp-clusters
+    - fast-dev-aws-clusters
+    #next:
+    #TODO: istio setup workspaces here
+
   # This manages all GCP clusters.
   fast-dev-gcp-clusters:
-    workspaces:
-    # This load balancer is a global entry point to all regional GCP clusters
-    # for the fast-dev environment. It must exist before GKE clusters are
-    # created. An istio-gateway service running in each regional GKE cluster
-    # will associate its pods with this global load balancer directly.
-    - fast/dev/gcp/global/load-balancer
+    group:
+    - fast-dev-gcp-us-cluster
+    - fast-dev-gcp-au-cluster
     next:
-      group:
-      - fast-dev-gcp-us-cluster
-      - fast-dev-gcp-au-cluster
+      workspaces:
+      # This load balancer is a global entry point to all regional GCP clusters
+      # for the fast-dev environment. It must exist before GKE clusters are
+      # created. An istio-gateway service running in each regional GKE cluster
+      # will associate its pods with this global load balancer directly.
+      - fast/dev/gcp/global/load-balancer
 
   # This manages the US GCP cluster.
   fast-dev-gcp-us-cluster:

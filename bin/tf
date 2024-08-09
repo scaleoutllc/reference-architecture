@@ -11,7 +11,7 @@ source "${SCRIPT_PATH}/../.env"
 
 flags=""
 if [[ $1 =~ ^(apply|destroy)$ ]]; then
-  flags=" -auto-approve -parallelism=20"
+  flags=" -auto-approve" # -parallelism=20
 fi
 
 GREEN='\033[0;31m'
