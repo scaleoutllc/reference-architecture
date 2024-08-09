@@ -1,0 +1,85 @@
+targets:
+  noDepsOne:
+    workspaces:
+    - foo
+    - bar
+
+  noDepsTwo:
+    workspaces:
+    - foo-parallel
+    - bar-parallel
+  
+  onlyGroup:
+    group:
+    - noDepsOne
+  
+  doubleIndirectGroup:
+    group:
+    - onlyGroup
+  
+  groupAndNestedWorkspace:
+    group:
+    - noDepsOne
+    - noDepsTwo
+    next:
+      workspaces:
+      - baz
+      - qux
+
+  nestedEverything:
+    workspaces:
+    - first
+    next:
+      group:
+      - noDepsOne
+      - noDepsTwo
+      next:
+        workspaces:
+        - almost-last
+        next:
+          workspaces:
+          - last
+  
+  workspacesThenGroup:
+    workspaces:
+    - first
+    - second
+    next:
+      group:
+      - noDepsOne
+      - noDepsTwo
+      next:
+        workspaces:
+        - last
+
+  finalBoss:
+    group:
+    - workspacesThenGroup
+    next:
+      workspaces:
+      - finito
+
+  clusters:
+    group:
+    - clusterOne
+    - clusterTwo
+  
+  clusterOne:
+    workspaces:
+    - fast/dev/aws/us-east-1/cluster
+    next:
+      workspaces:
+      - fast/dev/aws/us-east-1/nodes
+      next:
+        workspaces:
+        - fast/dev/aws/us-east-1/namespaces/kube-system
+
+  clusterTwo:
+    workspaces:
+    - fast/dev/aws/ap-southeast-2/cluster
+    next:
+      workspaces:
+      - fast/dev/aws/ap-southeast-2/nodes
+      next:
+        workspaces:
+        - fast/dev/aws/ap-southeast-2/namespaces/kube-system

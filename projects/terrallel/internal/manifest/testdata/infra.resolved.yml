@@ -1,0 +1,304 @@
+        fast-dev:
+            group:
+                - group:
+                    - group:
+                        - workspaces:
+                            - shared/dev/aws/us-east-1/network
+                            - fast/dev/aws/us-east-1/network
+                        - workspaces:
+                            - shared/dev/aws/ap-southeast-2/network
+                            - fast/dev/aws/ap-southeast-2/network
+                      next:
+                        workspaces:
+                            - shared/dev/aws/global/routing
+                    - workspaces:
+                        - shared/dev/gcp/global/network
+                        - fast/dev/gcp/global/network
+                      next:
+                        group:
+                            - workspaces:
+                                - shared/dev/gcp/us-east1/network
+                                - fast/dev/gcp/us-east1/network
+                            - workspaces:
+                                - shared/dev/gcp/australia-southeast1/network
+                                - fast/dev/gcp/australia-southeast1/network
+                        next:
+                            workspaces:
+                                - shared/dev/gcp/global/routing
+                  next:
+                    workspaces:
+                        - shared/dev/multi-cloud/routing
+            next:
+                group:
+                    - group:
+                        - group:
+                            - workspaces:
+                                - fast/dev/gcp/us-east1/cluster
+                              next:
+                                workspaces:
+                                    - fast/dev/gcp/us-east1/namespaces/autoneg-system
+                                    - fast/dev/gcp/us-east1/namespaces/kube-system
+                                    - fast/dev/gcp/us-east1/namespaces/istio-system
+                                next:
+                                    workspaces:
+                                        - fast/dev/gcp/us-east1/namespaces/ingress
+                            - workspaces:
+                                - fast/dev/gcp/australia-southeast1/cluster
+                              next:
+                                workspaces:
+                                    - fast/dev/gcp/australia-southeast1/namespaces/autoneg-system
+                                    - fast/dev/gcp/australia-southeast1/namespaces/kube-system
+                                    - fast/dev/gcp/australia-southeast1/namespaces/istio-system
+                                next:
+                                    workspaces:
+                                        - fast/dev/gcp/australia-southeast1/namespaces/ingress
+                          next:
+                            workspaces:
+                                - fast/dev/gcp/global/load-balancer
+                        - workspaces:
+                            - fast/dev/aws/global/accelerator
+                          next:
+                            group:
+                                - workspaces:
+                                    - fast/dev/aws/us-east-1/cluster
+                                  next:
+                                    workspaces:
+                                        - fast/dev/aws/us-east-1/namespaces/kube-system
+                                    next:
+                                        workspaces:
+                                            - fast/dev/aws/us-east-1/namespaces/istio-system
+                                        next:
+                                            workspaces:
+                                                - fast/dev/aws/us-east-1/namespaces/ingress
+                                - workspaces:
+                                    - fast/dev/aws/ap-southeast-2/cluster
+                                  next:
+                                    workspaces:
+                                        - fast/dev/aws/ap-southeast-2/namespaces/kube-system
+                                    next:
+                                        workspaces:
+                                            - fast/dev/aws/ap-southeast-2/namespaces/istio-system
+                                        next:
+                                            workspaces:
+                                                - fast/dev/aws/ap-southeast-2/namespaces/ingress
+        fast-dev-aws-au-cluster:
+            workspaces:
+                - fast/dev/aws/ap-southeast-2/cluster
+            next:
+                workspaces:
+                    - fast/dev/aws/ap-southeast-2/namespaces/kube-system
+                next:
+                    workspaces:
+                        - fast/dev/aws/ap-southeast-2/namespaces/istio-system
+                    next:
+                        workspaces:
+                            - fast/dev/aws/ap-southeast-2/namespaces/ingress
+        fast-dev-aws-clusters:
+            workspaces:
+                - fast/dev/aws/global/accelerator
+            next:
+                group:
+                    - workspaces:
+                        - fast/dev/aws/us-east-1/cluster
+                      next:
+                        workspaces:
+                            - fast/dev/aws/us-east-1/namespaces/kube-system
+                        next:
+                            workspaces:
+                                - fast/dev/aws/us-east-1/namespaces/istio-system
+                            next:
+                                workspaces:
+                                    - fast/dev/aws/us-east-1/namespaces/ingress
+                    - workspaces:
+                        - fast/dev/aws/ap-southeast-2/cluster
+                      next:
+                        workspaces:
+                            - fast/dev/aws/ap-southeast-2/namespaces/kube-system
+                        next:
+                            workspaces:
+                                - fast/dev/aws/ap-southeast-2/namespaces/istio-system
+                            next:
+                                workspaces:
+                                    - fast/dev/aws/ap-southeast-2/namespaces/ingress
+        fast-dev-aws-us-cluster:
+            workspaces:
+                - fast/dev/aws/us-east-1/cluster
+            next:
+                workspaces:
+                    - fast/dev/aws/us-east-1/namespaces/kube-system
+                next:
+                    workspaces:
+                        - fast/dev/aws/us-east-1/namespaces/istio-system
+                    next:
+                        workspaces:
+                            - fast/dev/aws/us-east-1/namespaces/ingress
+        fast-dev-cluster-mesh:
+            group:
+                - group:
+                    - workspaces:
+                        - fast/dev/gcp/us-east1/cluster
+                      next:
+                        workspaces:
+                            - fast/dev/gcp/us-east1/namespaces/autoneg-system
+                            - fast/dev/gcp/us-east1/namespaces/kube-system
+                            - fast/dev/gcp/us-east1/namespaces/istio-system
+                        next:
+                            workspaces:
+                                - fast/dev/gcp/us-east1/namespaces/ingress
+                    - workspaces:
+                        - fast/dev/gcp/australia-southeast1/cluster
+                      next:
+                        workspaces:
+                            - fast/dev/gcp/australia-southeast1/namespaces/autoneg-system
+                            - fast/dev/gcp/australia-southeast1/namespaces/kube-system
+                            - fast/dev/gcp/australia-southeast1/namespaces/istio-system
+                        next:
+                            workspaces:
+                                - fast/dev/gcp/australia-southeast1/namespaces/ingress
+                  next:
+                    workspaces:
+                        - fast/dev/gcp/global/load-balancer
+                - workspaces:
+                    - fast/dev/aws/global/accelerator
+                  next:
+                    group:
+                        - workspaces:
+                            - fast/dev/aws/us-east-1/cluster
+                          next:
+                            workspaces:
+                                - fast/dev/aws/us-east-1/namespaces/kube-system
+                            next:
+                                workspaces:
+                                    - fast/dev/aws/us-east-1/namespaces/istio-system
+                                next:
+                                    workspaces:
+                                        - fast/dev/aws/us-east-1/namespaces/ingress
+                        - workspaces:
+                            - fast/dev/aws/ap-southeast-2/cluster
+                          next:
+                            workspaces:
+                                - fast/dev/aws/ap-southeast-2/namespaces/kube-system
+                            next:
+                                workspaces:
+                                    - fast/dev/aws/ap-southeast-2/namespaces/istio-system
+                                next:
+                                    workspaces:
+                                        - fast/dev/aws/ap-southeast-2/namespaces/ingress
+        fast-dev-gcp-au-cluster:
+            workspaces:
+                - fast/dev/gcp/australia-southeast1/cluster
+            next:
+                workspaces:
+                    - fast/dev/gcp/australia-southeast1/namespaces/autoneg-system
+                    - fast/dev/gcp/australia-southeast1/namespaces/kube-system
+                    - fast/dev/gcp/australia-southeast1/namespaces/istio-system
+                next:
+                    workspaces:
+                        - fast/dev/gcp/australia-southeast1/namespaces/ingress
+        fast-dev-gcp-clusters:
+            group:
+                - workspaces:
+                    - fast/dev/gcp/us-east1/cluster
+                  next:
+                    workspaces:
+                        - fast/dev/gcp/us-east1/namespaces/autoneg-system
+                        - fast/dev/gcp/us-east1/namespaces/kube-system
+                        - fast/dev/gcp/us-east1/namespaces/istio-system
+                    next:
+                        workspaces:
+                            - fast/dev/gcp/us-east1/namespaces/ingress
+                - workspaces:
+                    - fast/dev/gcp/australia-southeast1/cluster
+                  next:
+                    workspaces:
+                        - fast/dev/gcp/australia-southeast1/namespaces/autoneg-system
+                        - fast/dev/gcp/australia-southeast1/namespaces/kube-system
+                        - fast/dev/gcp/australia-southeast1/namespaces/istio-system
+                    next:
+                        workspaces:
+                            - fast/dev/gcp/australia-southeast1/namespaces/ingress
+            next:
+                workspaces:
+                    - fast/dev/gcp/global/load-balancer
+        fast-dev-gcp-us-cluster:
+            workspaces:
+                - fast/dev/gcp/us-east1/cluster
+            next:
+                workspaces:
+                    - fast/dev/gcp/us-east1/namespaces/autoneg-system
+                    - fast/dev/gcp/us-east1/namespaces/kube-system
+                    - fast/dev/gcp/us-east1/namespaces/istio-system
+                next:
+                    workspaces:
+                        - fast/dev/gcp/us-east1/namespaces/ingress
+        network-dev-aws:
+            group:
+                - workspaces:
+                    - shared/dev/aws/us-east-1/network
+                    - fast/dev/aws/us-east-1/network
+                - workspaces:
+                    - shared/dev/aws/ap-southeast-2/network
+                    - fast/dev/aws/ap-southeast-2/network
+            next:
+                workspaces:
+                    - shared/dev/aws/global/routing
+        network-dev-aws-au:
+            workspaces:
+                - shared/dev/aws/ap-southeast-2/network
+                - fast/dev/aws/ap-southeast-2/network
+        network-dev-aws-us:
+            workspaces:
+                - shared/dev/aws/us-east-1/network
+                - fast/dev/aws/us-east-1/network
+        network-dev-gcp:
+            workspaces:
+                - shared/dev/gcp/global/network
+                - fast/dev/gcp/global/network
+            next:
+                group:
+                    - workspaces:
+                        - shared/dev/gcp/us-east1/network
+                        - fast/dev/gcp/us-east1/network
+                    - workspaces:
+                        - shared/dev/gcp/australia-southeast1/network
+                        - fast/dev/gcp/australia-southeast1/network
+                next:
+                    workspaces:
+                        - shared/dev/gcp/global/routing
+        network-dev-gcp-au:
+            workspaces:
+                - shared/dev/gcp/australia-southeast1/network
+                - fast/dev/gcp/australia-southeast1/network
+        network-dev-gcp-us:
+            workspaces:
+                - shared/dev/gcp/us-east1/network
+                - fast/dev/gcp/us-east1/network
+        network-dev-mesh:
+            group:
+                - group:
+                    - workspaces:
+                        - shared/dev/aws/us-east-1/network
+                        - fast/dev/aws/us-east-1/network
+                    - workspaces:
+                        - shared/dev/aws/ap-southeast-2/network
+                        - fast/dev/aws/ap-southeast-2/network
+                  next:
+                    workspaces:
+                        - shared/dev/aws/global/routing
+                - workspaces:
+                    - shared/dev/gcp/global/network
+                    - fast/dev/gcp/global/network
+                  next:
+                    group:
+                        - workspaces:
+                            - shared/dev/gcp/us-east1/network
+                            - fast/dev/gcp/us-east1/network
+                        - workspaces:
+                            - shared/dev/gcp/australia-southeast1/network
+                            - fast/dev/gcp/australia-southeast1/network
+                    next:
+                        workspaces:
+                            - shared/dev/gcp/global/routing
+            next:
+                workspaces:
+                    - shared/dev/multi-cloud/routing
