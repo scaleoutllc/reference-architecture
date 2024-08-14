@@ -59,20 +59,20 @@ YAML
   ]
 }
 
-# data "tfe_outputs" "shared-dev-aws-global-load-balancer" {
-# organization = "scaleout"
-# workspace    = "shared-dev-aws-global-load-balancer"
-# }
+data "tfe_outputs" "shared-dev-aws-global-load-balancer" {
+  organization = "scaleout"
+  workspace    = "shared-dev-aws-global-load-balancer"
+}
 
-# data "aws_lb" "north-south" {
-#   name       = "${local.name}-north-south"
-#   depends_on = [helm_release.north-south-gateway]
-# }
+data "aws_lb" "north-south" {
+  name       = "${local.name}-north-south"
+  depends_on = [helm_release.north-south-gateway]
+}
 
-# resource "aws_globalaccelerator_endpoint_group" "aws" {
-#   listener_arn          = data.tfe_outputs.shared-dev-aws-global-load-balancer.values.listener_arn
-#   endpoint_group_region = local.region
-#   endpoint_configuration {
-#     endpoint_id = data.aws_lb.north-south.arn
-#   }
-# }
+resource "aws_globalaccelerator_endpoint_group" "aws" {
+  listener_arn          = data.tfe_outputs.shared-dev-aws-global-load-balancer.values.listener_arn
+  endpoint_group_region = local.region
+  endpoint_configuration {
+    endpoint_id = data.aws_lb.north-south.arn
+  }
+}

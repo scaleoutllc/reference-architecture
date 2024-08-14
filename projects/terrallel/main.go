@@ -27,5 +27,5 @@ func main() {
 		os.Exit(1)
 	}
 	//fmt.Print(target.Collapse())
-	fmt.Println(target.Render())
+	fmt.Printf("%s\n", target.Render())
 }

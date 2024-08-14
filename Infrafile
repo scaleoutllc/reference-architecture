@@ -47,13 +47,7 @@ targets:
     - fast/dev/aws/ap-southeast-2/network
 
   # This manages all GCP networks as one and meshes them together using a
-  # Network Connectivity Hub with each regional VPC as a spoke. A single
-  # global VPC in GCP is also possible and arguably less complex.
-  # 
-  #The decision to use GCP's network connectivity hub is based on long
-  # experience with large organizations where silos between teams often
-  # prevent a truly unified approach to networking. Additionally this
-  # provides networking parity for on-prem networks joining the mesh.
+  # Network Connectivity Hub with each regional VPC as a spoke.
   network-dev-gcp:
     workspaces:
     - shared/dev/gcp/global/network
@@ -72,7 +66,7 @@ targets:
     - shared/dev/gcp/us-east1/network
     - fast/dev/gcp/us-east1/network
 
-  # This manages the Austrlian GCP network.
+  # This manages the Australian GCP network.
   network-dev-gcp-au:
     workspaces:
     - shared/dev/gcp/australia-southeast1/network

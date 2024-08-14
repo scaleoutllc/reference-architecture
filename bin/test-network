@@ -7,33 +7,28 @@ SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE[0]")"; pwd -P)"
 TEST_PATH="${SCRIPT_PATH}/../environments/shared/dev/multi-cloud/testing"
 
 function endlessRemote {
-  $1 "bash -c 'sudo apt-get update && sudo apt-get install netcat-openbsd -y && while true; do results=\$($2); echo \"\$results\"; done'"
+  local flags="-o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+  local cmd="bash -c 'sudo apt-get update && sudo apt-get install netcat-openbsd -y && while true; do result=\$( ${1} ); echo \"\$result\"; done'"
+  if [[ $# -eq 3 ]]; then
+    ssh -q -A ${flags} -o "ProxyCommand=ssh ${flags} -W %h:%p $2" $3 $cmd
+  fi
+  ssh -q -A ${flags} $2 $cmd
 }
+
+function check {
+  local source=$1
+  local dest=$2
+  local ip=$3
+  echo "Building network check for $source->$dest..." >&2
+  prefix="printf \"\033[0;34m${source}->${dest}:\033[0m \""
+  testing="nc -zv -w1 ${ip} 22 2>&1"
+  success="GREP_COLORS=\"mt=01;32\" grep --color=always -E \"succeeded|$\""
+  fail="GREP_COLORS=\"mt=01;31\" grep --color=always -E \"timed out|$\""
+  echo "${prefix}; ${testing} | ${success} | ${fail}"
+}
+export -f endlessRemote check
 
 echo "Gathering network configuration..."
 terraform -chdir="${TEST_PATH}" init 2>&1 > /dev/null
-terraform -chdir="${TEST_PATH}" refresh 2>&1 > /dev/null
-envs=($(terraform -chdir="${TEST_PATH}" output -raw envs))
-mapfile -t ssh < <(terraform -chdir="${TEST_PATH}" output -raw ssh)
-ips=($(terraform -chdir="${TEST_PATH}" output -raw ips))
-echo "Done."
-
-echo "Repeatedly testing connectivity until manually exited..."
-# Iterate over all environments.
-for envIdx in "${!envs[@]}"; do
-  # Initialize a variable to hold all network connectivity test commands.
-  tests=""
-  # Iterate over all private ips for all environments.
-  for ipIdx in "${!ips[@]}"; do
-    # Skip testing connection to self.
-    if [[ "$envIdx" != "$ipIdx" ]]; then
-      # Print the source and destination environments.
-      tests+="printf \"\033[0;34m${envs[$envIdx]}->${envs[$ipIdx]}:\033[0m \";"
-      # Test SSH comms between source and destination debug vms using netcat.
-      tests+="nc -zv -w1 ${ips[$ipIdx]} 22 2>&1 | GREP_COLORS=\"mt=01;32\" grep --color=always -E \"succeeded|$\" | GREP_COLORS=\"mt=01;31\" grep --color=always -E \"timed out|$\";"
-    fi
-  done
-  endlessRemote "${ssh[$envIdx]}" "${tests}" &
-done
-wait
-
+terraform -chdir="${TEST_PATH}" apply -auto-approve
+bash -c "trap 'kill 0' SIGINT; $(terraform -chdir="${TEST_PATH}" output -raw exec)"

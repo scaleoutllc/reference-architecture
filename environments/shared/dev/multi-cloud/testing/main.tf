@@ -1,59 +1,44 @@
-output "envs" {
-  value = chomp(<<EOF
-aws-us
-aws-au
-gcp-us
-gcp-au
+locals {
+  hosts = [
+    { name    = "aws-au",
+      bastion = data.tfe_outputs.aws-au-shared.values.bastion-ssh,
+      host    = data.tfe_outputs.aws-au.values.debug-ssh,
+      ip      = data.tfe_outputs.aws-au.values.debug-ip,
+    },
+    { name    = "aws-us",
+      bastion = data.tfe_outputs.aws-us-shared.values.bastion-ssh,
+      host    = data.tfe_outputs.aws-us.values.debug-ssh,
+      ip      = data.tfe_outputs.aws-us.values.debug-ip,
+    },
+    {
+      name    = "gcp-au",
+      bastion = null,
+      host    = data.tfe_outputs.gcp-au.values.debug-ssh,
+      ip      = data.tfe_outputs.gcp-au.values.debug-ip,
+    },
+    {
+      name    = "gcp-us",
+      bastion = null,
+      host    = data.tfe_outputs.gcp-us.values.debug-ssh,
+      ip      = data.tfe_outputs.gcp-us.values.debug-ip,
+    },
+  ]
+}
+
+output "exec" {
+  value = nonsensitive(<<EOF
+%{for source in local.hosts~}
+%{for dest in local.hosts~}
+%{if source.name != dest.name~}
+%{if source.bastion != null~}
+endlessRemote "$(check ${source.name} ${dest.name} ${dest.ip})" ${source.bastion} ${source.host} &
+%{else~}
+endlessRemote "$(check ${source.name} ${dest.name} ${dest.ip})" ${source.host} &
+%{endif~}
+%{endif~}
+%{endfor~}
+%{endfor~}
+wait
 EOF
   )
-}
-
-output "ips" {
-  value = chomp(<<EOF
-${nonsensitive(data.tfe_outputs.aws-us.values.debug-ip)}
-${nonsensitive(data.tfe_outputs.aws-au.values.debug-ip)}
-${nonsensitive(data.tfe_outputs.gcp-us.values.debug-ip)}
-${nonsensitive(data.tfe_outputs.gcp-au.values.debug-ip)}
-EOF
-  )
-}
-
-output "ssh" {
-  value = chomp(<<EOF
-ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -A -J ${nonsensitive(data.tfe_outputs.aws-us-shared.values.bastion-ssh)} ${nonsensitive(data.tfe_outputs.aws-us.values.debug-ssh)}
-ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -A -J ${nonsensitive(data.tfe_outputs.aws-au-shared.values.bastion-ssh)} ${nonsensitive(data.tfe_outputs.aws-au.values.debug-ssh)}
-ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -A ${nonsensitive(data.tfe_outputs.gcp-us.values.debug-ssh)}
-ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -A ${nonsensitive(data.tfe_outputs.gcp-au.values.debug-ssh)}
-EOF
-  )
-}
-
-data "tfe_outputs" "aws-us-shared" {
-  organization = "scaleout"
-  workspace    = "shared-dev-aws-us-east-1-network"
-}
-
-data "tfe_outputs" "aws-au-shared" {
-  organization = "scaleout"
-  workspace    = "shared-dev-aws-ap-southeast-2-network"
-}
-
-data "tfe_outputs" "aws-us" {
-  organization = "scaleout"
-  workspace    = "fast-dev-aws-us-east-1-network"
-}
-
-data "tfe_outputs" "aws-au" {
-  organization = "scaleout"
-  workspace    = "fast-dev-aws-ap-southeast-2-network"
-}
-
-data "tfe_outputs" "gcp-us" {
-  organization = "scaleout"
-  workspace    = "fast-dev-gcp-us-east1-network"
-}
-
-data "tfe_outputs" "gcp-au" {
-  organization = "scaleout"
-  workspace    = "fast-dev-gcp-australia-southeast1-network"
 }
