@@ -1,3 +1,6 @@
+config:
+  basedir: environments
+  
 targets:
   # This manages all networks in all clouds in all regions as one. The
   # resultant networks are meshed with a combination of primitives from
