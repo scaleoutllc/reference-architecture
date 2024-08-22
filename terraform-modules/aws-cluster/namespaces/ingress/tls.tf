@@ -1,17 +1,7 @@
-data "aws_route53_zone" "main" {
-  name = local.domain
-}
-
 resource "aws_acm_certificate" "main" {
-  domain_name = local.domain
-  subject_alternative_names = [
-    local.domain,                                          // global
-    "*.${local.domain}",                                   // global 
-    "*.${local.provider}.${local.domain}",                 // provider
-    "*.${local.locale}.${local.domain}",                   // regional
-    "*.${local.provider}-${local.locale}.${local.domain}", // fully-specified
-  ]
-  validation_method = "DNS"
+  domain_name               = var.domain
+  subject_alternative_names = var.sans
+  validation_method         = "DNS"
   lifecycle {
     ignore_changes = [tags]
   }
@@ -37,5 +27,5 @@ resource "aws_route53_record" "main" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.main.id
+  zone_id         = var.zone_id
 }

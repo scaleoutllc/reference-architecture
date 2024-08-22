@@ -1,10 +1,10 @@
 module "external-dns" {
   source                     = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  role_name                  = "${local.name}-external-dns"
+  role_name                  = "${var.name}-external-dns"
   attach_external_dns_policy = true
   oidc_providers = {
     main = {
-      provider_arn               = data.tfe_outputs.cluster.values.oidc_provider_arn
+      provider_arn               = var.oidc_provider_arn
       namespace_service_accounts = ["kube-system:external-dns"]
     }
   }
@@ -33,12 +33,12 @@ resource "helm_release" "external-dns" {
   values = [
     <<YAML
 domainFilters:
-- fast.dev.wescaleout.cloud
+- ${var.domain}
 provider:
   name: aws
 env:
 - name: AWS_DEFAULT_REGION
-  value: ${local.region}
+  value: ${var.region}
 serviceAccount:
   create: false
   name: ${kubernetes_service_account.external-dns.metadata[0].name}

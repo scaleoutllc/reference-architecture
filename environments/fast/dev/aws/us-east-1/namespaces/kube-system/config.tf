@@ -6,6 +6,7 @@ locals {
   locale   = "us"
   area     = "${local.team}-${local.env}-${local.provider}"
   name     = "${local.area}-${local.locale}"
+  domain   = " fast.dev.wescaleout.cloud"
 }
 
 terraform {

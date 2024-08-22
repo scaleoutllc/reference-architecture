@@ -1,19 +1,19 @@
 module "routing-nodes" {
   source        = "terraform-aws-modules/eks/aws//modules/eks-managed-node-group"
   version       = "~> 20.8.5"
-  name          = "${local.name}-routing"
-  iam_role_name = "${local.name}-routing-node"
+  name          = "${var.name}-routing"
+  iam_role_name = "${var.name}-routing-node"
   labels = {
-    "node.wescaleout.cloud/routing" = "true"
+    "${var.node_label_root}/routing" = "true"
   }
   taints = [{
-    key    = "node.wescaleout.cloud/routing"
+    key    = "${var.node_label_root}/routing"
     value  = "true"
     effect = "NO_SCHEDULE"
   }]
   cluster_name                      = module.eks.cluster_name
   cluster_service_cidr              = module.eks.cluster_service_cidr
-  subnet_ids                        = data.tfe_outputs.network.values.vpc.private_subnet_ids
+  subnet_ids                        = var.subnet_ids
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids = [
     module.eks.node_security_group_id

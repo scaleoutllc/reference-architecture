@@ -2,7 +2,7 @@ resource "kubernetes_namespace" "istio-system" {
   metadata {
     name = "istio-system"
     labels = {
-      "topology.istio.io/network" = local.area
+      "topology.istio.io/network" = var.area
     }
   }
 }
@@ -20,8 +20,8 @@ resource "tls_cert_request" "istio" {
 
 resource "tls_locally_signed_cert" "istio" {
   cert_request_pem      = tls_cert_request.istio.cert_request_pem
-  ca_private_key_pem    = data.tfe_outputs.ca.values.private_key
-  ca_cert_pem           = data.tfe_outputs.ca.values.cert
+  ca_private_key_pem    = var.ca_private_key
+  ca_cert_pem           = var.ca_cert
   is_ca_certificate     = true
   set_subject_key_id    = true
   validity_period_hours = 87600
@@ -39,8 +39,8 @@ resource "kubernetes_secret" "cacerts" {
   data = {
     "ca-cert.pem"    = tls_locally_signed_cert.istio.cert_pem
     "ca-key.pem"     = tls_private_key.istio.private_key_pem
-    "root-cert.pem"  = data.tfe_outputs.ca.values.cert
-    "cert-chain.pem" = "${tls_locally_signed_cert.istio.cert_pem}${data.tfe_outputs.ca.values.cert}"
+    "root-cert.pem"  = var.ca_cert
+    "cert-chain.pem" = "${tls_locally_signed_cert.istio.cert_pem}${var.ca_cert}"
   }
   depends_on = [
     kubernetes_namespace.istio-system
@@ -71,9 +71,9 @@ resource "helm_release" "istiod" {
   values = [<<YAML
 pilot:
   nodeSelector:
-    node.wescaleout.cloud/routing: "true"
+    ${var.node_label_root}/routing: "true"
   tolerations:
-  - key: node.wescaleout.cloud/routing
+  - key: ${var.node_label_root}/routing
     operator: Equal
     value: "true"
     effect: NoSchedule
@@ -87,10 +87,10 @@ pilot:
 meshConfig:
   holdApplicationUntilProxyStarts: "true"
 global:
-  meshId: ${local.team}-${local.env}
-  network: ${local.area}
+  meshId: ${var.team}-${var.env}
+  network: ${var.area}
   multiCluster:
-    clusterName: ${local.name}
+    clusterName: ${var.name}
 YAML
   ]
 }
