@@ -1,28 +1,3 @@
-provider "kustomization" {
-  kubeconfig_raw = yamlencode({
-    apiVersion = "v1"
-    clusters = [{
-      name = var.cluster.host
-      cluster = {
-        certificate-authority-data = var.cluster.cluster_ca_certificate
-        server                     = var.cluster.host
-      }
-    }]
-    users = [{
-      name = var.cluster.host
-      user = var.cluster.user
-    }]
-    contexts = [{
-      name = var.cluster.host
-      context = {
-        cluster = var.cluster.host
-        user    = var.cluster.host
-      }
-    }]
-  })
-  context = var.cluster.host
-}
-
 data "kustomization_build" "resources" {
   path = var.path
 }
