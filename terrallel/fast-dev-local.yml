@@ -1,28 +1,33 @@
 targets:
-  # This manages the local kind clusters as one.
-  fast-dev-local-clusters:
-    group:
-    - fast-dev-local-us-cluster
-    - fast-dev-local-au-cluster
-    
-  # This manages the local "US" cluster
+  # This manages the local "US" management cluster
+  fast-dev-local-us-cluster-mgmt:
+    workspaces:
+    - fast/dev/local/north-america/cluster-mgmt/k8s
+    next:
+      workspaces:
+      - fast/dev/local/north-america/cluster-mgmt/core-services
+      next:
+        workspaces:
+        - fast/dev/local/north-america/cluster-mgmt/routing
+
+  # This manages the local "US" workload cluster
   fast-dev-local-us-cluster:
     workspaces:
-    - fast/dev/local/north-america/workload-cluster/k8s
+    - fast/dev/local/north-america/cluster/k8s
     next:
       workspaces:
-      - fast/dev/local/north-america/workload-cluster/core-services
+      - fast/dev/local/north-america/cluster/core-services
       next:
         workspaces:
-        - fast/dev/local/north-america/workload-cluster/routing
+        - fast/dev/local/north-america/cluster/routing
 
-  # This manages the local "Australian" cluster
+  # This manages the local "Australian" workload cluster
   fast-dev-local-au-cluster:
     workspaces:
-    - fast/dev/local/australia/workload-cluster/k8s
+    - fast/dev/local/australia/cluster/k8s
     next:
       workspaces:
-      - fast/dev/local/australia/workload-cluster/core-services
+      - fast/dev/local/australia/cluster/core-services
       next:
         workspaces:
-        - fast/dev/local/australia/workload-cluster/routing
+        - fast/dev/local/australia/cluster/routing

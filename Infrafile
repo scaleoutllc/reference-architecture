@@ -1,9 +1,16 @@
 terrallel:
-  basedir: ../reference-architecture/environments
+  basedir: environments
   import:
   - terrallel/*.yml
 
 targets:
+  # This manages the local kind clusters as one.
+  fast-dev-local-clusters:
+    group:
+    - fast-dev-local-us-cluster-mgmt
+    - fast-dev-local-us-cluster
+    - fast-dev-local-au-cluster
+
   # This manages all networks in all clouds in all regions as one. The
   # resultant networks are meshed with a combination of primitives from
   # each provider. By default every network can directly reach every
