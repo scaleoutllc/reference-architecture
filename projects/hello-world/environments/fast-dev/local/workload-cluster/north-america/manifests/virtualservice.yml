@@ -6,6 +6,7 @@ metadata:
 spec:
   hosts:
   - hello.tkellen-us.fast.dev.wescaleout.cloud
+  - hello.matt-us.fast.dev.wescaleout.cloud
   gateways:
   - ingress/north-south
   http:

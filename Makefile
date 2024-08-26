@@ -9,8 +9,8 @@ ifndef AWS_PROFILE
 endif
 	terrallel fast-dev-local-clusters -- init
 	terrallel fast-dev-local-clusters -- apply -auto-approve
-	kubectl apply -k projects/hello-world/environments/fast/dev/local/north-america --context kind-fast-dev-local-us
-	kubectl apply -k projects/hello-world/environments/fast/dev/local/australia --context kind-fast-dev-local-au
+	kubectl apply -k projects/hello-world/environments/fast-dev/local/workload-cluster/north-america --context kind-fast-dev-local-us
+	kubectl apply -k projects/hello-world/environments/fast-dev/local/workload-cluster/australia --context kind-fast-dev-local-au
 
 destroy-local: ## Destroy all local clusters.
 	kind delete clusters fast-dev-local-us-mgmt fast-dev-local-us fast-dev-local-au
