@@ -8,7 +8,7 @@ TEST_PATH="${SCRIPT_PATH}/../environments/shared/dev/multi-cloud/testing"
 
 function endlessRemote {
   local flags="-o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-  local cmd="bash -c 'sudo apt-get update && sudo apt-get install netcat-openbsd -y && while true; do result=\$( ${1} ); echo \"\$result\"; done'"
+  local cmd="bash -c 'sudo apt-get update && sudo apt-get install netcat-openbsd -y && while true; do result=\$( ${1} ); echo \"\$result\"; sleep 1; done'"
   if [[ $# -eq 3 ]]; then
     ssh -q -A ${flags} -o "ProxyCommand=ssh ${flags} -W %h:%p $2" $3 $cmd
   fi

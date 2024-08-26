@@ -37,12 +37,12 @@ data "tfe_outputs" "shared-ap-southeast-2-network" {
   workspace    = "shared-dev-aws-ap-southeast-2-network"
 }
 
-data "tfe_outputs" "fast-us-east-1-network" {
+data "tfe_outputs" "fast-us-east-1-workload-cluster-network" {
   organization = "scaleout"
-  workspace    = "fast-dev-aws-us-east-1-network"
+  workspace    = "fast-dev-aws-us-east-1-workload-cluster-network"
 }
 
-data "tfe_outputs" "fast-ap-southeast-2-network" {
+data "tfe_outputs" "fast-ap-southeast-2-workload-cluster-network" {
   organization = "scaleout"
-  workspace    = "fast-dev-aws-ap-southeast-2-network"
+  workspace    = "fast-dev-aws-ap-southeast-2-workload-cluster-network"
 }

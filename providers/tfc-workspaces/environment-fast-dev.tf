@@ -27,13 +27,3 @@ module "fast-dev-multi-cloud" {
   vcs_identifier     = "scaleoutllc/reference-architecture"
   vcs_oauth_token_id = data.tfe_oauth_client.github.oauth_token_id
 }
-
-module "fast-dev-local" {
-  source             = "../../terraform-modules/tfc-project"
-  basedir            = "environments/fast/dev/local"
-  project            = "fast-dev-local"
-  workspace_prefix   = "fast-dev-local"
-  organization       = "scaleout"
-  vcs_identifier     = "scaleoutllc/reference-architecture"
-  vcs_oauth_token_id = data.tfe_oauth_client.github.oauth_token_id
-}

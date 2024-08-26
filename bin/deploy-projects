@@ -9,9 +9,9 @@ for envPath in environments/*; do
   [[ $env == "base" ]] && continue
   (
     clusterPath=$(echo "${env}" | sed 's/-/\//1;s/-/\//1;s/-/\//1')
-    context=$(terraform -chdir="${SCRIPT_PATH}/../environments/${clusterPath}/cluster" output -raw name)
+    context=$(terraform -chdir="${SCRIPT_PATH}/../environments/${clusterPath}/cluster/k8s" output -raw name)
     kubectl config delete-context $context 2> /dev/null || true
-    bash -c "$(terraform -chdir="${SCRIPT_PATH}/../environments/${clusterPath}/cluster" output -raw kubectl-context)"
+    bash -c "$(terraform -chdir="${SCRIPT_PATH}/../environments/${clusterPath}/cluster/k8s" output -raw kubectl-context)"
     cd $envPath
     kubectl --context $context apply -k .
   )

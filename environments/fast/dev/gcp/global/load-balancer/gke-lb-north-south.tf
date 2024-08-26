@@ -18,7 +18,7 @@ resource "google_compute_global_forwarding_rule" "north-south" {
 resource "google_compute_target_https_proxy" "north-south" {
   name            = "${local.lbName}-tls-terminate"
   url_map         = google_compute_url_map.north-south.id
-  certificate_map = "//certificatemanager.googleapis.com/projects/scaleout-dev/locations/global/certificateMaps/${local.area}"
+  certificate_map = "//certificatemanager.googleapis.com/projects/${local.project}/locations/global/certificateMaps/${local.area}"
   depends_on = [
     google_certificate_manager_certificate_map.main
   ]

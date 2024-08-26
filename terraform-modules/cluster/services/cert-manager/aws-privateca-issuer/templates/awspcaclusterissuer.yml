@@ -1,0 +1,12 @@
+apiVersion: awspca.cert-manager.io/v1beta1
+kind: AWSPCAClusterIssuer
+metadata:
+  name: root
+spec:
+  arn: {{ .Values.arn }}
+  region: {{ .Values.AWS_REGION }}
+{{ if and (ne .Values.AWS_ACCESS_KEY_ID "") (ne .Values.AWS_SECRET_ACCESS_KEY "")  }}
+  secretRef:
+    name: aws-privateca
+    namespace: cert-manager
+{{ end }}

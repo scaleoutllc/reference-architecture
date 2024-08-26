@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: hello-world
   labels:
-    istio-injection: enabled
+    istio.io/rev: 1-23-0
