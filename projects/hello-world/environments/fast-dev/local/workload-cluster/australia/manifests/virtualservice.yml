@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1 
+kind: VirtualService
+metadata:
+  name: home
+  namespace: hello-world
+spec:
+  hosts:
+  - hello.tkellen-au.fast.dev.wescaleout.cloud
+  gateways:
+  - ingress/north-south
+  http:
+  - route:
+    - destination:
+        host: home.hello-world.svc.cluster.local
+        port:
+          number: 80

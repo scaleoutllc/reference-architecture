@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: east-west
+  namespace: ingress
+spec:
+  selector:
+    app: east-west-gateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "{{ .Values.domain }}"
+    - "*.{{ .Values.domain }}"
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: east-west-gateway 
+    hosts:
+    - "{{ .Values.domain }}"
+    - "*.{{ .Values.domain }}"
