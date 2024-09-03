@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "../../../../../../../terraform-modules/aws-vpc"
+  source = "../../../../../../terraform-modules/aws-vpc"
   name   = local.name
   azs = [
     "${local.region}a",
