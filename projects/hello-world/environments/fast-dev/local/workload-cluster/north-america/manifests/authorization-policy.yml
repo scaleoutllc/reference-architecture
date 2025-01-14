@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      istio: north-south-gateway # adapt to your needs
+      istio: north-south-gateway
   action: CUSTOM
   provider:
     name: oauth2-proxy
