@@ -10,8 +10,18 @@ spec:
   gateways:
   - ingress/north-south
   http:
-  - route:
-    - destination:
-        host: home.hello-world.svc.cluster.local
-        port:
-          number: 80
+    - match:
+        - uri:
+            prefix: "/oauth2/"
+      rewrite:
+        authority: oauth2-proxy.ingress.svc.cluster.local
+      route:
+        - destination:
+            host: home.hello-world.svc.cluster.local
+            port:
+              number: 80
+    - route:
+      - destination:
+          host: home.hello-world.svc.cluster.local
+          port:
+            number: 80

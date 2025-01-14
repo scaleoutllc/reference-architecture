@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: ext-authz
+  namespace: ingress
+spec:
+  selector:
+    matchLabels:
+      istio: north-south-gateway # adapt to your needs
+  action: CUSTOM
+  provider:
+    name: oauth2-proxy
+  rules:
+    - to:
+        - operation:
+            hosts:
+              - "hello.matt-us.fast.dev.wescaleout.cloud"

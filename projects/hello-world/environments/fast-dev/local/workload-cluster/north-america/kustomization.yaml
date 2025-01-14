@@ -4,3 +4,4 @@ resources:
 - ../../../../base
 - manifests/configmap.yml
 - manifests/virtualservice.yml
+- manifests/authorization-policy.yml
