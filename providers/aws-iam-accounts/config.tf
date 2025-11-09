@@ -1,16 +1,18 @@
-locals {
-  tfc = {
-    hostname = "app.terraform.io"
-    audience = "aws.workload.identity"
-  }
-}
-
 terraform {
   cloud {
     organization = "scaleout"
     workspaces {
       project = "providers"
-      name    = "providers-aws-account-root"
+      name    = "aws-iam-accounts"
+    }
+  }
+}
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.81.0"
     }
   }
 }
