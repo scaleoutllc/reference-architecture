@@ -11,7 +11,3 @@ resource "aws_iam_user_policy_attachment" "admin" {
 resource "aws_iam_access_key" "matt" {
   user = aws_iam_user.matt.name
 }
-
-output "mattkey" {
-  value = aws_iam_access_key.matt
-}
